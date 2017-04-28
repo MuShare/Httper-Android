@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">Httper</string>
+
+    <string name="main_view_method">Request Method</string>
+    <string name="main_view_url_example">www.example.com</string>
+    <string name="main_view_send_request">Send Request</string>
+    <string name="main_view_headers">Headers</string>
+    <string name="main_view_params">Parameters</string>
+    <string name="main_view_key">Key</string>
+    <string name="main_view_value">Value</string>
+    <string-array name="methods_array">
+        <item>GET</item>
+        <item>POST</item>
+        <item>HEAD</item>
+        <item>PUT</item>
+        <item>DELETE</item>
+        <item>CONNECT</item>
+        <item>OPTIONS</item>
+        <item>TRACE</item>
+        <item>PATCH</item>
+    </string-array>
+    <string-array name="http_array">
+        <item>http://</item>
+        <item>https://</item>
+    </string-array>
+
 </resources>

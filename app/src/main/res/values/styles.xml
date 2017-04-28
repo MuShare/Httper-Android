@@ -1,11 +1,35 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
     </style>
 
+    <style name="AppTheme.TextAppearanceLarge">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+    </style>
+
+    <style name="AppTheme.TextAppearanceNormal">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+    </style>
+
+    <style name="AppTheme.TextAppearanceLarge.Right">
+        <item name="android:gravity">right|end</item>
+    </style>
+
+    <style name="AppTheme.TextAppearanceLargeSpinner">
+        <item name="android:spinnerItemStyle">@style/AppTheme.TextAppearanceLarge.Right</item>
+        <item name="android:spinnerDropDownItemStyle">@style/AppTheme.TextAppearanceLarge</item>
+    </style>
+
+    <style name="AppTheme.TextAppearanceNormalSpinner">
+        <item name="android:spinnerItemStyle">@style/AppTheme.TextAppearanceNormal</item>
+        <item name="android:spinnerDropDownItemStyle">@style/AppTheme.TextAppearanceNormal</item>
+    </style>
 </resources>
