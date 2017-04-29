@@ -4,17 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:focusableInTouchMode="true"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
+    android:focusableInTouchMode="true"
     tools:context="org.mushare.httper.MainActivity">
 
     <TextView
         style="@style/AppTheme.TextAppearanceNormal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:text="@string/main_view_method"
         app:layout_constraintBottom_toBottomOf="@+id/spinnerMethods"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:entries="@array/methods_array"
         android:theme="@style/AppTheme.TextAppearanceLargeSpinner"
         app:layout_constraintRight_toRightOf="parent"
@@ -40,7 +40,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:background="@color/colorDivider"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -50,9 +50,9 @@
         android:id="@+id/spinnerHttp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:entries="@array/http_array"
         android:theme="@style/AppTheme.TextAppearanceNormalSpinner"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -83,7 +83,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:background="@color/colorDivider"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -101,13 +101,16 @@
         app:layout_constraintTop_toBottomOf="@+id/divider2">
 
         <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:overScrollMode="never"/>
 
         <include
             layout="@layout/http_setting_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
     </FrameLayout>
 
     <Button
@@ -115,8 +118,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
         android:text="@string/main_view_send_request"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

@@ -3,31 +3,38 @@
               xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="wrap_content"
               android:gravity="center_vertical"
               android:orientation="horizontal">
 
-    <TextView
+    <EditText
         android:id="@+id/textViewKey"
-        style="@style/AppTheme.TextAppearanceNormal"
+        style="@style/AppTheme.TextAppearanceSmall"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_weight="3"
         android:hint="@string/main_view_key"/>
 
-    <TextView
+    <EditText
         android:id="@+id/textViewValue"
-        style="@style/AppTheme.TextAppearanceNormal"
+        style="@style/AppTheme.TextAppearanceSmall"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="4"
         android:hint="@string/main_view_value"/>
 
     <ImageButton
         android:id="@+id/imageButtonRemove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:background="?selectableItemBackgroundBorderless"
         app:srcCompat="@drawable/ic_action_remove_circle_outline"
         tools:ignore="ContentDescription"/>
