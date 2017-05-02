@@ -33,4 +33,9 @@ public class HttpSettingListItemPair extends HttpSettingListItem {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public boolean hasContent() {
+        return key != null && !key.isEmpty() && value != null && !value.isEmpty();
+    }
 }

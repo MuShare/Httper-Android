@@ -17,18 +17,18 @@ import java.util.List;
  */
 
 public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
-    private List<HttpSettingListItem> mDataset;
+    private static List<HttpSettingListItem> mDataset;
 
     HttpSettingListAdapter(List<HttpSettingListItem> dataset) {
         mDataset = dataset;
     }
 
-    private int findLastPosition(int type) {
-        if (mDataset == null || mDataset.size() == 0) return -1;
-        for (int i = mDataset.size() - 1; i >= 0; i--) {
-            if (mDataset.get(i).getType() == type) return i;
+    private int findInsertPosition(int type, int endPosition) {
+//        if (mDataset == null || mDataset.size() == 0) return -1;
+        for (int i = mDataset.size() - 1; i > endPosition; i--) {
+            if (mDataset.get(i).getType() == type) return i + 1;
         }
-        return -1;
+        return endPosition + 1;
     }
 
     @Override
@@ -42,8 +42,7 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
             case HttpSettingListItem.TYPE_HEADER:
             case HttpSettingListItem.TYPE_PARAMETER:
                 return new ViewHolderKeyValuePair(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.http_setting_item, parent, false), new TextWatcherKey()
-                        , new TextWatcherValue());
+                        .inflate(R.layout.http_setting_item, parent, false));
             case HttpSettingListItem.TYPE_HEADER_TITLE:
             case HttpSettingListItem.TYPE_PARAMETER_TITLE:
                 return new ViewHolderTitle(LayoutInflater.from(parent.getContext()).inflate(R.layout
@@ -59,8 +58,6 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
         switch (httpSettingListItem.getType()) {
             case HttpSettingListItem.TYPE_HEADER:
             case HttpSettingListItem.TYPE_PARAMETER:
-                ((ViewHolderKeyValuePair) holder).textWatcherKey.updatePosition(position);
-                ((ViewHolderKeyValuePair) holder).textWatcherValue.updatePosition(position);
                 ((ViewHolderKeyValuePair) holder).textViewKey.setText(((HttpSettingListItemPair)
                         httpSettingListItem).getKey());
                 ((ViewHolderKeyValuePair) holder).textViewValue.setText((
@@ -84,8 +81,8 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
                         .OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int position = findLastPosition(HttpSettingListItem.TYPE_HEADER) + 1;
-                        if (position == 0) position = holder.getAdapterPosition() + 1;
+                        int position = findInsertPosition(HttpSettingListItem.TYPE_HEADER, holder
+                                .getAdapterPosition());
                         mDataset.add(position, new HttpSettingListItemPair(HttpSettingListItem
                                 .TYPE_HEADER));
                         notifyItemInserted(position);
@@ -98,8 +95,8 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
                         .OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int position = findLastPosition(HttpSettingListItem.TYPE_PARAMETER) + 1;
-                        if (position == 0) position = holder.getAdapterPosition() + 1;
+                        int position = findInsertPosition(HttpSettingListItem.TYPE_PARAMETER,
+                                holder.getAdapterPosition());
                         mDataset.add(position, new HttpSettingListItemPair(HttpSettingListItem
                                 .TYPE_PARAMETER));
                         notifyItemInserted(position);
@@ -122,18 +119,45 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
         TextView textViewKey;
         TextView textViewValue;
         ImageButton imageButtonRemove;
-        TextWatcherKey textWatcherKey;
-        TextWatcherValue textWatcherValue;
 
-        ViewHolderKeyValuePair(View v, TextWatcherKey textWatcherKey, TextWatcherValue
-                textWatcherValue) {
+        ViewHolderKeyValuePair(View v) {
             super(v);
-            this.textWatcherKey = textWatcherKey;
-            this.textWatcherValue = textWatcherValue;
             textViewKey = (TextView) v.findViewById(R.id.textViewKey);
-            textViewKey.addTextChangedListener(textWatcherKey);
+            textViewKey.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    ((HttpSettingListItemPair) mDataset.get(getAdapterPosition())).setKey(s
+                            .toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
             textViewValue = (TextView) v.findViewById(R.id.textViewValue);
-            textViewValue.addTextChangedListener(textWatcherValue);
+            textViewValue.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    ((HttpSettingListItemPair) mDataset.get(getAdapterPosition())).setValue(s
+                            .toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
             imageButtonRemove = (ImageButton) v.findViewById(R.id.imageButtonRemove);
         }
 
@@ -153,51 +177,5 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
             imageButtonAdd = (ImageButton) v.findViewById(R.id.imageButtonAdd);
         }
 
-    }
-
-    private class TextWatcherKey implements TextWatcher {
-        private HttpSettingListItemPair pair;
-
-        void updatePosition(int position) {
-            pair = (HttpSettingListItemPair) mDataset.get(position);
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            pair.setKey(s.toString());
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    }
-
-    private class TextWatcherValue implements TextWatcher {
-        private HttpSettingListItemPair pair;
-
-        void updatePosition(int position) {
-            pair = (HttpSettingListItemPair) mDataset.get(position);
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            pair.setValue(s.toString());
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
     }
 }

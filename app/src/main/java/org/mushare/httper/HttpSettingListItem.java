@@ -1,10 +1,12 @@
 package org.mushare.httper;
 
+import java.io.Serializable;
+
 /**
  * Created by dklap on 4/29/2017.
  */
 
-public class HttpSettingListItem {
+public class HttpSettingListItem implements Serializable {
     public static final int TYPE_HEADER = 0;
     public static final int TYPE_HEADER_TITLE = 1;
     public static final int TYPE_PARAMETER = 2;
@@ -17,5 +19,9 @@ public class HttpSettingListItem {
 
     public int getType() {
         return type;
+    }
+
+    public boolean hasContent() {
+        return false;
     }
 }
