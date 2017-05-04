@@ -33,9 +33,9 @@ import java.util.List;
 
 
 public class MyJSONStringer {
-    final int COLOR_ATOM = Color.parseColor("#AE81FF");
-    final int COLOR_NAME = Color.parseColor("#F92672");
-    final int COLOR_STRING = Color.parseColor("#FD971F");
+    private final int COLOR_ATOM = Color.parseColor("#AE81FF");
+    private final int COLOR_NAME = Color.parseColor("#F92672");
+    private final int COLOR_STRING = Color.parseColor("#FFAB40");
     /**
      * The output data, containing at most one top-level array or object.
      */
@@ -303,7 +303,7 @@ public class MyJSONStringer {
 
     private void string(String value, boolean isName) {
         int color = isName ? COLOR_NAME : COLOR_STRING;
-        out.append(getColoredString("\"", color));
+        StringBuilder tmp = new StringBuilder("\"");
         for (int i = 0, length = value.length(); i < length; i++) {
             char c = value.charAt(i);
 
@@ -317,40 +317,61 @@ public class MyJSONStringer {
                 case '"':
                 case '\\':
                 case '/':
-                    out.append(getColoredString('\\', color)).append(getColoredString(c, color));
+                    tmp.append('\\').append(c);
                     break;
 
                 case '\t':
+                    if (tmp.length() > 0) {
+                        out.append(getColoredString(tmp.toString(), color));
+                        tmp.setLength(0);
+                    }
                     out.append(getColoredString("\\t", COLOR_ATOM));
                     break;
 
                 case '\b':
+                    if (tmp.length() > 0) {
+                        out.append(getColoredString(tmp.toString(), color));
+                        tmp.setLength(0);
+                    }
                     out.append(getColoredString("\\b", COLOR_ATOM));
                     break;
 
                 case '\n':
+                    if (tmp.length() > 0) {
+                        out.append(getColoredString(tmp.toString(), color));
+                        tmp.setLength(0);
+                    }
                     out.append(getColoredString("\\n", COLOR_ATOM));
                     break;
 
                 case '\r':
+                    if (tmp.length() > 0) {
+                        out.append(getColoredString(tmp.toString(), color));
+                        tmp.setLength(0);
+                    }
                     out.append(getColoredString("\\r", COLOR_ATOM));
                     break;
 
                 case '\f':
+                    if (tmp.length() > 0) {
+                        out.append(getColoredString(tmp.toString(), color));
+                        tmp.setLength(0);
+                    }
                     out.append(getColoredString("\\f", COLOR_ATOM));
                     break;
 
                 default:
                     if (c <= 0x1F) {
-                        out.append(getColoredString(String.format("\\u%04x", (int) c), color));
+                        tmp.append(String.format("\\u%04x", (int) c));
                     } else {
-                        out.append(getColoredString(c, color));
+                        tmp.append(c);
                     }
                     break;
             }
 
         }
-        out.append(getColoredString("\"", color));
+        tmp.append("\"");
+        out.append(getColoredString(tmp.toString(), color));
     }
 
     private void newline() {

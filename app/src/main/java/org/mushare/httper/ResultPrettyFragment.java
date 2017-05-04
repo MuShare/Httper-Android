@@ -9,13 +9,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by dklap on 5/4/2017.
  */
 
 public class ResultPrettyFragment extends Fragment {
+    CharSequence text;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
@@ -23,16 +24,15 @@ public class ResultPrettyFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_pretty_result, container, false);
         TextView textView = (TextView) view.findViewById(R.id.textView);
         Bundle bundle = getArguments();
-        if (bundle != null) {
-            String json = "";
+        if (text == null && bundle != null) {
+            text = new String(bundle.getByteArray("content"));
             try {
-                json = new String(bundle.getByteArray("content"));
-                MyJSONObject jsonObject = new MyJSONObject(json);
-                textView.setText(jsonObject.getCharSequence(2));
+                MyJSONObject jsonObject = new MyJSONObject(text.toString());
+                text = jsonObject.getCharSequence(2);
             } catch (JSONException e) {
-                textView.setText(json);
             }
         }
+        textView.setText(text);
         return view;
     }
 }

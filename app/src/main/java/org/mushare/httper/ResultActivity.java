@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageButton;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -27,13 +28,16 @@ import cz.msebera.android.httpclient.message.BasicHeader;
  */
 
 public class ResultActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.appbar);
-//        toolbar.inflateMenu(R.menu.menu_result_activity);
+        final MyTouchableLinearLayout toolbar = (MyTouchableLinearLayout) findViewById(R.id.appBar);
+        toolbar.setAlpha(0.4f);
+        toolbar.touchable(false);
+
         ImageButton buttonShowInfo = (ImageButton) findViewById(R.id.buttonShowInfo);
         CheatSheet.setup(buttonShowInfo);
 
@@ -58,6 +62,7 @@ public class ResultActivity extends AppCompatActivity {
 
             }
         });
+        final View refreshing = findViewById(R.id.refreshingView);
 
         Intent intent = getIntent();
         final String url = intent.getStringExtra("http") + intent.getStringExtra("url");
@@ -80,6 +85,9 @@ public class ResultActivity extends AppCompatActivity {
                                         (getSupportFragmentManager(), url, responseBody);
 
                                 viewPager.setAdapter(pagerAdapter);
+                                refreshing.setVisibility(View.GONE);
+                                toolbar.setAlpha(1f);
+                                toolbar.touchable(true);
                             }
 
                             @Override
@@ -89,6 +97,9 @@ public class ResultActivity extends AppCompatActivity {
                                         (getSupportFragmentManager(), url, responseBody);
 
                                 viewPager.setAdapter(pagerAdapter);
+                                refreshing.setVisibility(View.GONE);
+                                toolbar.setAlpha(1f);
+                                toolbar.touchable(true);
                             }
                         });
                 break;
@@ -102,6 +113,9 @@ public class ResultActivity extends AppCompatActivity {
                                         (getSupportFragmentManager(), url, responseBody);
 
                                 viewPager.setAdapter(pagerAdapter);
+                                refreshing.setVisibility(View.GONE);
+                                toolbar.setAlpha(1f);
+                                toolbar.touchable(true);
                             }
 
                             @Override
@@ -111,6 +125,9 @@ public class ResultActivity extends AppCompatActivity {
                                         (getSupportFragmentManager(), url, responseBody);
 
                                 viewPager.setAdapter(pagerAdapter);
+                                refreshing.setVisibility(View.GONE);
+                                toolbar.setAlpha(1f);
+                                toolbar.touchable(true);
                             }
                         });
                 break;
