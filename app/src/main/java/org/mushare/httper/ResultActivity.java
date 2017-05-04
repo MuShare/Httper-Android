@@ -14,9 +14,13 @@ import android.widget.ImageButton;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.message.BasicHeader;
 
 /**
  * Created by dklap on 4/30/2017.
@@ -56,10 +60,17 @@ public class ResultActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         final String url = intent.getStringExtra("http") + intent.getStringExtra("url");
+        RequestParams params = new RequestParams((HashMap) intent.getSerializableExtra
+                ("parameter"));
+        HashMap<String, String> headers = (HashMap) intent.getSerializableExtra("header");
+        List<Header> headerList = new ArrayList<>();
+        Set<String> keys = headers.keySet();
+        for (String key : keys) {
+            headerList.add(new BasicHeader(key, headers.get(key)));
+        }
         switch (intent.getStringExtra("method")) {
             case "GET":
-                RestClient.get(url, new
-                        RequestParams((HashMap) intent.getSerializableExtra("parameter")), new
+                RestClient.get(url, headerList.toArray(new Header[headerList.size()]), params, new
                         AsyncHttpResponseHandler() {
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, byte[]
@@ -72,14 +83,36 @@ public class ResultActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure(int statusCode, Header[] headers, byte[]
-                                    responseBody,
-                                                  Throwable error) {
+                                    responseBody, Throwable error) {
                                 MyPagerAdapter pagerAdapter = new MyPagerAdapter
                                         (getSupportFragmentManager(), url, responseBody);
 
                                 viewPager.setAdapter(pagerAdapter);
                             }
                         });
+                break;
+            case "POST":
+                RestClient.post(url, headerList.toArray(new Header[headerList.size()]), params, new
+                        AsyncHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, byte[]
+                                    responseBody) {
+                                MyPagerAdapter pagerAdapter = new MyPagerAdapter
+                                        (getSupportFragmentManager(), url, responseBody);
+
+                                viewPager.setAdapter(pagerAdapter);
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, byte[]
+                                    responseBody, Throwable error) {
+                                MyPagerAdapter pagerAdapter = new MyPagerAdapter
+                                        (getSupportFragmentManager(), url, responseBody);
+
+                                viewPager.setAdapter(pagerAdapter);
+                            }
+                        });
+                break;
         }
     }
 

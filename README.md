@@ -1,6 +1,6 @@
 # Httper-Android
 
-Httper is a REST API test tool running on your iOS devices. It helps developers to test their REST API anywhere and anytime without desktops.
+Httper is a REST API test tool running on your Android devices. It helps developers to test their REST API anywhere and anytime without desktops.
 
 Some features of Httper: 
 
