@@ -38,6 +38,7 @@ public class ResultActivity extends AppCompatActivity {
         CheatSheet.setup(buttonShowInfo);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.content);
+        viewPager.setOffscreenPageLimit(2);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
