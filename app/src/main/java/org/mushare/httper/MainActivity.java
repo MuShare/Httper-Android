@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<HttpSettingListItem> dataSet;
@@ -23,17 +24,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final Spinner spinnerMethod = (Spinner) findViewById(R.id.spinnerMethods);
+        final Spinner spinnerHttp = (Spinner) findViewById(R.id.spinnerHttp);
         final EditText editTextUrl = (EditText) findViewById(R.id.editTextUrl);
         final Button buttonSend = (Button) findViewById(R.id.buttonSend);
-        buttonSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ResultActivity.class);
-                intent.putExtra("method", spinnerMethod.getSelectedItem().toString());
-                intent.putExtra("url", editTextUrl.getText().toString());
-                startActivity(intent);
-            }
-        });
+
         editTextUrl.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -51,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
@@ -78,11 +71,50 @@ public class MainActivity extends AppCompatActivity {
         // specify an adapter (see also next example)
         HttpSettingListAdapter adapter = new HttpSettingListAdapter(dataSet);
         recyclerView.setAdapter(adapter);
+
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+                intent.putExtra("method", spinnerMethod.getSelectedItem().toString());
+                intent.putExtra("http", spinnerHttp.getSelectedItem().toString());
+                intent.putExtra("url", editTextUrl.getText().toString());
+                intent.putExtra("header", getHeaders());
+                intent.putExtra("parameter", getParameters());
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("dataSet", dataSet);
+    }
+
+    public HashMap<String, String> getHeaders() {
+        HashMap<String, String> header = new HashMap<>();
+        for (HttpSettingListItem item : dataSet) {
+            if (item.getType() != HttpSettingListItem.TYPE_HEADER) continue;
+            String key;
+            if ((key = ((HttpSettingListItemPair) item).getKey()) != null && !key.isEmpty()) {
+                String value = ((HttpSettingListItemPair) item).getValue();
+                header.put(key, value == null ? "" : value);
+            }
+        }
+        return header;
+    }
+
+    public HashMap<String, String> getParameters() {
+        HashMap<String, String> param = new HashMap<>();
+        for (HttpSettingListItem item : dataSet) {
+            if (item.getType() != HttpSettingListItem.TYPE_PARAMETER) continue;
+            String key;
+            if ((key = ((HttpSettingListItemPair) item).getKey()) != null && !key.isEmpty()) {
+                String value = ((HttpSettingListItemPair) item).getValue();
+                param.put(key, value == null ? "" : value);
+            }
+        }
+        return param;
     }
 }

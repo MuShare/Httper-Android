@@ -22,9 +22,6 @@
         <item>HEAD</item>
         <item>PUT</item>
         <item>DELETE</item>
-        <item>CONNECT</item>
-        <item>OPTIONS</item>
-        <item>TRACE</item>
         <item>PATCH</item>
     </string-array>
     <string-array name="http_array">

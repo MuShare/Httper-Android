@@ -12,7 +12,7 @@
 
     <style name="AppTheme.TextAppearanceLarge">
         <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textColor">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.TextAppearanceNormal">
@@ -31,11 +31,9 @@
 
     <style name="AppTheme.TextAppearanceLargeSpinner">
         <item name="android:spinnerItemStyle">@style/AppTheme.TextAppearanceLarge.Right</item>
-        <item name="android:spinnerDropDownItemStyle">@style/AppTheme.TextAppearanceLarge</item>
     </style>
 
     <style name="AppTheme.TextAppearanceNormalSpinner">
         <item name="android:spinnerItemStyle">@style/AppTheme.TextAppearanceNormal</item>
-        <item name="android:spinnerDropDownItemStyle">@style/AppTheme.TextAppearanceNormal</item>
     </style>
 </resources>
