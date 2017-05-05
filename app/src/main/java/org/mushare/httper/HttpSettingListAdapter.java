@@ -10,9 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by dklap on 4/28/2017.
@@ -42,9 +40,11 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case HttpSettingListItem.TYPE_HEADER:
+                return new ViewHolderKeyValuePair(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.http_setting_header, parent, false));
             case HttpSettingListItem.TYPE_PARAMETER:
                 return new ViewHolderKeyValuePair(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.http_setting_item, parent, false));
+                        .inflate(R.layout.http_setting_param, parent, false));
             case HttpSettingListItem.TYPE_HEADER_TITLE:
             case HttpSettingListItem.TYPE_PARAMETER_TITLE:
                 return new ViewHolderTitle(LayoutInflater.from(parent.getContext()).inflate(R.layout

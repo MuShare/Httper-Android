@@ -36,6 +36,11 @@ public class ResultPrettyFragment extends Fragment {
                     MyJSONObject jsonObject = new MyJSONObject(text.toString());
                     text = jsonObject.getCharSequence(2);
                 } catch (JSONException e) {
+                    try {
+                        MyJSONArray jsonArray = new MyJSONArray(text.toString());
+                        text = jsonArray.getCharSequence(2);
+                    } catch (JSONException e1) {
+                    }
                 }
             }
         }

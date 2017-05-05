@@ -223,7 +223,7 @@ public class MyJSONStringer {
 
         if (value instanceof JSONArray) {
             array();
-            for (int i = 0; i < ((JSONArray) value).length(); i++) {
+            for (int i = 0, l = ((JSONArray) value).length(); i < l; i++) {
                 Object object = ((JSONArray) value).opt(i);
                 value(object);
             }
