@@ -17,6 +17,12 @@
     <string name="result_view_response_info">Response Information</string>
     <string name="result_view_refreshing">Refreshing…</string>
 
+    <string name="error_unknown_host">Can not connect to the host.\nPlease check your network and the url.</string>
+    <string name="error_ssl">SSL error.</string>
+    <string name="error_unknown">Unknown error. Sorry.</string>
+    <string name="dialog_error">Error</string>
+    <string name="dialog_ok">OK</string>
+
     <string-array name="methods_array">
         <item>GET</item>
         <item>POST</item>

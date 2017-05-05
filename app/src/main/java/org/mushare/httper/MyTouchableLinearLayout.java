@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
  */
 
 public class MyTouchableLinearLayout extends LinearLayout {
-    private boolean touchable;
+    private boolean touchable = true;
 
     public MyTouchableLinearLayout(Context context) {
         super(context);

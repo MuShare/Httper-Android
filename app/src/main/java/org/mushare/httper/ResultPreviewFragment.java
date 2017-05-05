@@ -27,6 +27,8 @@ public class ResultPreviewFragment extends Fragment {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
+        webSettings.setBuiltInZoomControls(true);
+        webSettings.setDisplayZoomControls(false);
         Bundle bundle = getArguments();
         byte[] data;
         if (bundle != null && (data = bundle.getByteArray("content")) != null)

@@ -23,17 +23,29 @@ public class ResultPrettyFragment extends Fragment {
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pretty_result, container, false);
         TextView textView = (TextView) view.findViewById(R.id.textView);
-        Bundle bundle = getArguments();
-        byte[] data;
-        if (text == null && bundle != null && (data = bundle.getByteArray("content")) != null) {
-            text = new String(data);
-            try {
-                MyJSONObject jsonObject = new MyJSONObject(text.toString());
-                text = jsonObject.getCharSequence(2);
-            } catch (JSONException e) {
+
+        if (savedInstanceState != null) {
+            text = savedInstanceState.getCharSequence("text");
+        }
+        if (text == null) {
+            Bundle bundle = getArguments();
+            byte[] data;
+            if (bundle != null && (data = bundle.getByteArray("content")) != null) {
+                text = new String(data);
+                try {
+                    MyJSONObject jsonObject = new MyJSONObject(text.toString());
+                    text = jsonObject.getCharSequence(2);
+                } catch (JSONException e) {
+                }
             }
         }
         textView.setText(text);
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putCharSequence("text", text);
     }
 }

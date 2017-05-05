@@ -1,5 +1,7 @@
 package org.mushare.httper;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -28,20 +31,32 @@ import cz.msebera.android.httpclient.message.BasicHeader;
  */
 
 public class ResultActivity extends AppCompatActivity {
+    final int DIALOG_ERROR_CONNECT = 0;
+    final int ERROR_CODE_ERROR_UNKNOWN = -1;
+    final int ERROR_CODE_ERROR_HOST = 0;
+    final int ERROR_CODE_ERROR_SSL = 1;
+
+    String url;
+    RequestParams params;
+    Header[] headers;
+    String method;
+    byte[] responseBody;
+
+    MyTouchableLinearLayout toolbar;
+    ViewPager viewPager;
+    View refreshing;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
-        final MyTouchableLinearLayout toolbar = (MyTouchableLinearLayout) findViewById(R.id.appBar);
-        toolbar.setAlpha(0.4f);
-        toolbar.touchable(false);
+        toolbar = (MyTouchableLinearLayout) findViewById(R.id.appBar);
 
         ImageButton buttonShowInfo = (ImageButton) findViewById(R.id.buttonShowInfo);
         CheatSheet.setup(buttonShowInfo);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.content);
+        viewPager = (ViewPager) findViewById(R.id.content);
         viewPager.setOffscreenPageLimit(2);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -62,77 +77,91 @@ public class ResultActivity extends AppCompatActivity {
 
             }
         });
-        final View refreshing = findViewById(R.id.refreshingView);
+        refreshing = findViewById(R.id.refreshingView);
 
         Intent intent = getIntent();
-        final String url = intent.getStringExtra("http") + intent.getStringExtra("url");
-        RequestParams params = new RequestParams((HashMap) intent.getSerializableExtra
-                ("parameter"));
-        HashMap<String, String> headers = (HashMap) intent.getSerializableExtra("header");
+        url = intent.getStringExtra("http") + intent.getStringExtra("url");
+        params = new RequestParams((HashMap) intent.getSerializableExtra("parameter"));
+        HashMap<String, String> headerMap = (HashMap) intent.getSerializableExtra("header");
         List<Header> headerList = new ArrayList<>();
-        Set<String> keys = headers.keySet();
+        Set<String> keys = headerMap.keySet();
         for (String key : keys) {
-            headerList.add(new BasicHeader(key, headers.get(key)));
+            headerList.add(new BasicHeader(key, headerMap.get(key)));
         }
-        switch (intent.getStringExtra("method")) {
+        headers = headerList.toArray(new Header[headerList.size()]);
+        method = intent.getStringExtra("method");
+
+        if (savedInstanceState == null) {
+            refresh();
+        } else {
+            responseBody = savedInstanceState.getByteArray("responseBody");
+            MyPagerAdapter pagerAdapter = new MyPagerAdapter
+                    (getSupportFragmentManager(), url, responseBody);
+
+            viewPager.setAdapter(pagerAdapter);
+        }
+    }
+
+    private void refresh() {
+        refreshing.setVisibility(View.VISIBLE);
+        toolbar.setAlpha(0.4f);
+        toolbar.touchable(false);
+        switch (method) {
             case "GET":
-                RestClient.get(url, headerList.toArray(new Header[headerList.size()]), params, new
-                        AsyncHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, byte[]
-                                    responseBody) {
-                                MyPagerAdapter pagerAdapter = new MyPagerAdapter
-                                        (getSupportFragmentManager(), url, responseBody);
-
-                                viewPager.setAdapter(pagerAdapter);
-                                refreshing.setVisibility(View.GONE);
-                                toolbar.setAlpha(1f);
-                                toolbar.touchable(true);
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, byte[]
-                                    responseBody, Throwable error) {
-                                MyPagerAdapter pagerAdapter = new MyPagerAdapter
-                                        (getSupportFragmentManager(), url, responseBody);
-
-                                viewPager.setAdapter(pagerAdapter);
-                                refreshing.setVisibility(View.GONE);
-                                toolbar.setAlpha(1f);
-                                toolbar.touchable(true);
-                            }
-                        });
+                RestClient.get(url, headers, params, new MyAsyncHttpResponseHandler());
                 break;
             case "POST":
-                RestClient.post(url, headerList.toArray(new Header[headerList.size()]), params, new
-                        AsyncHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, byte[]
-                                    responseBody) {
-                                MyPagerAdapter pagerAdapter = new MyPagerAdapter
-                                        (getSupportFragmentManager(), url, responseBody);
-
-                                viewPager.setAdapter(pagerAdapter);
-                                refreshing.setVisibility(View.GONE);
-                                toolbar.setAlpha(1f);
-                                toolbar.touchable(true);
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, byte[]
-                                    responseBody, Throwable error) {
-                                MyPagerAdapter pagerAdapter = new MyPagerAdapter
-                                        (getSupportFragmentManager(), url, responseBody);
-
-                                viewPager.setAdapter(pagerAdapter);
-                                refreshing.setVisibility(View.GONE);
-                                toolbar.setAlpha(1f);
-                                toolbar.touchable(true);
-                            }
-                        });
+                RestClient.post(url, headers, params, new MyAsyncHttpResponseHandler());
                 break;
         }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putByteArray("responseBody", responseBody);
+    }
+
+    @Nullable
+    @Override
+    protected Dialog onCreateDialog(int id, Bundle args) {
+        String msg;
+        switch (args.getInt("errorCode")) {
+            case ERROR_CODE_ERROR_HOST:
+                msg = getString(R.string.error_unknown_host);
+                break;
+            case ERROR_CODE_ERROR_SSL:
+                msg = getString(R.string.error_ssl);
+                break;
+            default:
+                msg = getString(R.string.error_unknown);
+                break;
+        }
+        return new AlertDialog.Builder(this).setMessage(msg).setPositiveButton(getString(R.string
+                .dialog_ok), null).setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                finish();
+            }
+        }).create();
+    }
+
+//    @Override
+//    protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
+//        String msg;
+//        switch (args.getInt("errorCode")) {
+//            case ERROR_CODE_ERROR_HOST:
+//                msg = getString(R.string.error_unknown_host);
+//                break;
+//            case ERROR_CODE_ERROR_SSL:
+//                msg = getString(R.string.error_ssl);
+//                break;
+//            default:
+//                msg = getString(R.string.error_unknown);
+//                break;
+//        }
+//        ((AlertDialog) dialog).setMessage(msg);
+//    }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
         byte[] content;
@@ -171,6 +200,43 @@ public class ResultActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             return 3;
+        }
+    }
+
+    private class MyAsyncHttpResponseHandler extends AsyncHttpResponseHandler {
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+            ResultActivity.this.responseBody = responseBody;
+            MyPagerAdapter pagerAdapter = new MyPagerAdapter
+                    (getSupportFragmentManager(), url, responseBody);
+            viewPager.setAdapter(pagerAdapter);
+            refreshing.setVisibility(View.GONE);
+            toolbar.setAlpha(1f);
+            toolbar.touchable(true);
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
+                              Throwable error) {
+            ResultActivity.this.responseBody = responseBody;
+            if (responseBody != null) {
+                MyPagerAdapter pagerAdapter = new MyPagerAdapter
+                        (getSupportFragmentManager(), url, responseBody);
+                viewPager.setAdapter(pagerAdapter);
+            } else {
+                Bundle bundle = new Bundle();
+                String msg = error.getMessage();
+                if (msg.startsWith("UnknownHostException exception"))
+                    bundle.putInt("errorCode", ERROR_CODE_ERROR_HOST);
+                else if (msg.startsWith("hostname in certificate didn't match"))
+                    bundle.putInt("errorCode", ERROR_CODE_ERROR_SSL);
+                else bundle.putInt("errorCode", ERROR_CODE_ERROR_UNKNOWN);
+                if (!isFinishing()) showDialog(DIALOG_ERROR_CONNECT, bundle);
+            }
+            refreshing.setVisibility(View.GONE);
+            toolbar.setAlpha(1f);
+            toolbar.touchable(true);
         }
     }
 }
