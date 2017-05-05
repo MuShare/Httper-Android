@@ -24,8 +24,9 @@ public class ResultPrettyFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_pretty_result, container, false);
         TextView textView = (TextView) view.findViewById(R.id.textView);
         Bundle bundle = getArguments();
-        if (text == null && bundle != null) {
-            text = new String(bundle.getByteArray("content"));
+        byte[] data;
+        if (text == null && bundle != null && (data = bundle.getByteArray("content")) != null) {
+            text = new String(data);
             try {
                 MyJSONObject jsonObject = new MyJSONObject(text.toString());
                 text = jsonObject.getCharSequence(2);

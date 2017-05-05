@@ -20,7 +20,9 @@ public class ResultRawFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_pretty_result, container, false);
         TextView textView = (TextView) view.findViewById(R.id.textView);
         Bundle bundle = getArguments();
-        if (bundle != null) textView.setText(new String(bundle.getByteArray("content")));
+        byte[] data;
+        if (bundle != null && (data = bundle.getByteArray("content")) != null)
+            textView.setText(new String(data));
         return view;
     }
 }

@@ -22,13 +22,17 @@ public class ResultPreviewFragment extends Fragment {
             Bundle savedInstanceState) {
         WebView webview = (WebView) inflater.inflate(R.layout.fragment_preview_result, container,
                 false);
+        webview.setInitialScale(1);
         WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
         Bundle bundle = getArguments();
-        if (bundle != null)
+        byte[] data;
+        if (bundle != null && (data = bundle.getByteArray("content")) != null)
             try {
-                webview.loadDataWithBaseURL(bundle.getString("baseUrl"), new String(bundle
-                        .getByteArray("content"), "UTF-8"), "text/html", null, null);
+                webview.loadDataWithBaseURL(bundle.getString("baseUrl"), new String(data,
+                        "UTF-8"), "text/html", null, null);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
