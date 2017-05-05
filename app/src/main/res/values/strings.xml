@@ -17,9 +17,7 @@
     <string name="result_view_response_info">Response Information</string>
     <string name="result_view_refreshing">Refreshing…</string>
 
-    <string name="error_unknown_host">Can not connect to the host.\nPlease check your network and the url.</string>
-    <string name="error_ssl">SSL error.</string>
-    <string name="error_unknown">Unknown error. Sorry.</string>
+    <string name="error">Cannot access to the URL, check your connection and service provider!\n\nError Message:\n%s</string>
     <string name="dialog_error">Error</string>
     <string name="dialog_ok">OK</string>
 

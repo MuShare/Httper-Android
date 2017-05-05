@@ -32,19 +32,17 @@ import cz.msebera.android.httpclient.message.BasicHeader;
 
 public class ResultActivity extends AppCompatActivity {
     final int DIALOG_ERROR_CONNECT = 0;
-    final int ERROR_CODE_ERROR_UNKNOWN = -1;
-    final int ERROR_CODE_ERROR_HOST = 0;
-    final int ERROR_CODE_ERROR_SSL = 1;
 
     String url;
     RequestParams params;
     Header[] headers;
     String method;
     byte[] responseBody;
+    boolean refreshing;
 
     MyTouchableLinearLayout toolbar;
     ViewPager viewPager;
-    View refreshing;
+    View refreshView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,7 +75,7 @@ public class ResultActivity extends AppCompatActivity {
 
             }
         });
-        refreshing = findViewById(R.id.refreshingView);
+        refreshView = findViewById(R.id.refreshingView);
 
         Intent intent = getIntent();
         url = intent.getStringExtra("http") + intent.getStringExtra("url");
@@ -91,7 +89,8 @@ public class ResultActivity extends AppCompatActivity {
         headers = headerList.toArray(new Header[headerList.size()]);
         method = intent.getStringExtra("method");
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || (refreshing = savedInstanceState.getBoolean
+                ("refreshing"))) {
             refresh();
         } else {
             responseBody = savedInstanceState.getByteArray("responseBody");
@@ -103,65 +102,46 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private void refresh() {
-        refreshing.setVisibility(View.VISIBLE);
+        refreshing = true;
+        RestClient.cancel(this);
+        refreshView.setVisibility(View.VISIBLE);
         toolbar.setAlpha(0.4f);
         toolbar.touchable(false);
         switch (method) {
             case "GET":
-                RestClient.get(url, headers, params, new MyAsyncHttpResponseHandler());
+                RestClient.get(this, url, headers, params, new MyAsyncHttpResponseHandler());
                 break;
             case "POST":
-                RestClient.post(url, headers, params, new MyAsyncHttpResponseHandler());
+                RestClient.post(this, url, headers, params, new MyAsyncHttpResponseHandler());
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        RestClient.cancel(this);
+        super.onDestroy();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putByteArray("responseBody", responseBody);
+        outState.putBoolean("refreshing", refreshing);
     }
 
     @Nullable
     @Override
     protected Dialog onCreateDialog(int id, Bundle args) {
-        String msg;
-        switch (args.getInt("errorCode")) {
-            case ERROR_CODE_ERROR_HOST:
-                msg = getString(R.string.error_unknown_host);
-                break;
-            case ERROR_CODE_ERROR_SSL:
-                msg = getString(R.string.error_ssl);
-                break;
-            default:
-                msg = getString(R.string.error_unknown);
-                break;
-        }
-        return new AlertDialog.Builder(this).setMessage(msg).setPositiveButton(getString(R.string
-                .dialog_ok), null).setOnDismissListener(new DialogInterface.OnDismissListener() {
+        return new AlertDialog.Builder(this).setTitle(R.string.dialog_error).setMessage(getString
+                (R.string.error, args.getString("errorMessage"))).setPositiveButton(getString(R
+                .string.dialog_ok), new DialogInterface.OnClickListener() {
             @Override
-            public void onDismiss(DialogInterface dialog) {
+            public void onClick(DialogInterface dialog, int which) {
                 finish();
             }
-        }).create();
+        }).setCancelable(false).create();
     }
-
-//    @Override
-//    protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
-//        String msg;
-//        switch (args.getInt("errorCode")) {
-//            case ERROR_CODE_ERROR_HOST:
-//                msg = getString(R.string.error_unknown_host);
-//                break;
-//            case ERROR_CODE_ERROR_SSL:
-//                msg = getString(R.string.error_ssl);
-//                break;
-//            default:
-//                msg = getString(R.string.error_unknown);
-//                break;
-//        }
-//        ((AlertDialog) dialog).setMessage(msg);
-//    }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
         byte[] content;
@@ -211,9 +191,10 @@ public class ResultActivity extends AppCompatActivity {
             MyPagerAdapter pagerAdapter = new MyPagerAdapter
                     (getSupportFragmentManager(), url, responseBody);
             viewPager.setAdapter(pagerAdapter);
-            refreshing.setVisibility(View.GONE);
+            refreshView.setVisibility(View.GONE);
             toolbar.setAlpha(1f);
             toolbar.touchable(true);
+            refreshing = false;
         }
 
         @Override
@@ -226,17 +207,13 @@ public class ResultActivity extends AppCompatActivity {
                 viewPager.setAdapter(pagerAdapter);
             } else {
                 Bundle bundle = new Bundle();
-                String msg = error.getMessage();
-                if (msg.startsWith("UnknownHostException exception"))
-                    bundle.putInt("errorCode", ERROR_CODE_ERROR_HOST);
-                else if (msg.startsWith("hostname in certificate didn't match"))
-                    bundle.putInt("errorCode", ERROR_CODE_ERROR_SSL);
-                else bundle.putInt("errorCode", ERROR_CODE_ERROR_UNKNOWN);
-                if (!isFinishing()) showDialog(DIALOG_ERROR_CONNECT, bundle);
+                bundle.putString("errorMessage", error.getMessage());
+                showDialog(DIALOG_ERROR_CONNECT, bundle);
             }
-            refreshing.setVisibility(View.GONE);
+            refreshView.setVisibility(View.GONE);
             toolbar.setAlpha(1f);
             toolbar.touchable(true);
+            refreshing = false;
         }
     }
 }
