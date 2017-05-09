@@ -17,7 +17,7 @@ public class ResultRawFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_pretty_result, container, false);
+        View view = inflater.inflate(R.layout.fragment_raw_result, container, false);
         TextView textView = (TextView) view.findViewById(R.id.textView);
         Bundle bundle = getArguments();
         byte[] data;

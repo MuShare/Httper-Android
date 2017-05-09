@@ -5,15 +5,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -43,6 +47,9 @@ public class ResultActivity extends AppCompatActivity {
     MyTouchableLinearLayout toolbar;
     ViewPager viewPager;
     View refreshView;
+    BottomSheetBehavior bottomSheetBehavior;
+
+    TextView responseURL;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,8 +58,7 @@ public class ResultActivity extends AppCompatActivity {
 
         toolbar = (MyTouchableLinearLayout) findViewById(R.id.appBar);
 
-        ImageButton buttonShowInfo = (ImageButton) findViewById(R.id.buttonShowInfo);
-        CheatSheet.setup(buttonShowInfo);
+        responseURL = (TextView) findViewById(R.id.textViewURL);
 
         viewPager = (ViewPager) findViewById(R.id.content);
         viewPager.setOffscreenPageLimit(2);
@@ -79,6 +85,7 @@ public class ResultActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         url = intent.getStringExtra("http") + intent.getStringExtra("url");
+        responseURL.setText(url);
         params = new RequestParams((HashMap) intent.getSerializableExtra("parameter"));
         HashMap<String, String> headerMap = (HashMap) intent.getSerializableExtra("header");
         List<Header> headerList = new ArrayList<>();
@@ -99,12 +106,30 @@ public class ResultActivity extends AppCompatActivity {
 
             viewPager.setAdapter(pagerAdapter);
         }
+
+        View bottomSheet = findViewById(R.id.bottom_sheet);
+        ViewCompat.setElevation(bottomSheet, TypedValue.applyDimension(TypedValue
+                .COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics()));
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+
+        ImageButton buttonShowInfo = (ImageButton) findViewById(R.id.buttonShowInfo);
+        CheatSheet.setup(buttonShowInfo);
+        buttonShowInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
     }
 
     private void refresh() {
         refreshing = true;
         RestClient.cancel(this);
         refreshView.setVisibility(View.VISIBLE);
+        viewPager.setVisibility(View.GONE);
         toolbar.setAlpha(0.4f);
         toolbar.touchable(false);
         switch (method) {
@@ -192,6 +217,7 @@ public class ResultActivity extends AppCompatActivity {
                     (getSupportFragmentManager(), url, responseBody);
             viewPager.setAdapter(pagerAdapter);
             refreshView.setVisibility(View.GONE);
+            viewPager.setVisibility(View.VISIBLE);
             toolbar.setAlpha(1f);
             toolbar.touchable(true);
             refreshing = false;
@@ -211,6 +237,7 @@ public class ResultActivity extends AppCompatActivity {
                 showDialog(DIALOG_ERROR_CONNECT, bundle);
             }
             refreshView.setVisibility(View.GONE);
+            viewPager.setVisibility(View.VISIBLE);
             toolbar.setAlpha(1f);
             toolbar.touchable(true);
             refreshing = false;

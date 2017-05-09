@@ -22,11 +22,11 @@ public class ResultPreviewFragment extends Fragment {
             Bundle savedInstanceState) {
         WebView webview = (WebView) inflater.inflate(R.layout.fragment_preview_result, container,
                 false);
-        webview.setInitialScale(1);
+        webview.setInitialScale(100);
         WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setLoadWithOverviewMode(true);
-        webSettings.setUseWideViewPort(true);
+//        webSettings.setLoadWithOverviewMode(true);
+//        webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
         Bundle bundle = getArguments();
