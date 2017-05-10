@@ -22,6 +22,12 @@ import android.widget.TextView;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,13 +41,13 @@ import cz.msebera.android.httpclient.message.BasicHeader;
  */
 
 public class ResultActivity extends AppCompatActivity {
+    static String url;
+    static byte[] responseBody;
     final int DIALOG_ERROR_CONNECT = 0;
-
-    String url;
     RequestParams params;
     Header[] headers;
     String method;
-    byte[] responseBody;
+    File cacheFile;
     boolean refreshing;
 
     MyTouchableLinearLayout toolbar;
@@ -96,15 +102,27 @@ public class ResultActivity extends AppCompatActivity {
         headers = headerList.toArray(new Header[headerList.size()]);
         method = intent.getStringExtra("method");
 
-        if (savedInstanceState == null || (refreshing = savedInstanceState.getBoolean
+        String cacheFilePath;
+        if (savedInstanceState == null || (cacheFilePath = savedInstanceState.getString
+                ("cacheFilePath")) == null || (refreshing = savedInstanceState.getBoolean
                 ("refreshing"))) {
+            cacheFile = new File(getCacheDir(), "response_cache");
             refresh();
         } else {
-            responseBody = savedInstanceState.getByteArray("responseBody");
-            MyPagerAdapter pagerAdapter = new MyPagerAdapter
-                    (getSupportFragmentManager(), url, responseBody);
-
-            viewPager.setAdapter(pagerAdapter);
+            cacheFile = new File(cacheFilePath);
+            if (cacheFile.exists()) {
+                int size = (int) cacheFile.length();
+                responseBody = new byte[size];
+                try {
+                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream
+                            (cacheFile));
+                    buf.read(responseBody, 0, responseBody.length);
+                    buf.close();
+                } catch (Exception ignored) {
+                }
+                MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+                viewPager.setAdapter(pagerAdapter);
+            }
         }
 
         View bottomSheet = findViewById(R.id.bottom_sheet);
@@ -145,13 +163,16 @@ public class ResultActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         RestClient.cancel(this);
+        url = null;
+        responseBody = null;
         super.onDestroy();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putByteArray("responseBody", responseBody);
+        outState.putString("cacheFilePath", cacheFile.getAbsolutePath());
+        System.out.println(cacheFile.getPath() + ", " + cacheFile.getAbsoluteFile());
         outState.putBoolean("refreshing", refreshing);
     }
 
@@ -169,35 +190,22 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
-        byte[] content;
-        String baseUrl;
 
-        MyPagerAdapter(FragmentManager fm, String baseUrl, byte[] content) {
+        MyPagerAdapter(FragmentManager fm) {
             super(fm);
-            this.baseUrl = baseUrl;
-            this.content = content;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            Bundle bundle = new Bundle();
-            bundle.putByteArray("content", content);
-            bundle.putString("baseUrl", baseUrl);
             switch (position) {
                 case 0:
-                    ResultPrettyFragment resultPrettyFragment = new ResultPrettyFragment();
-                    resultPrettyFragment.setArguments(bundle);
-                    return resultPrettyFragment;
+                    return new ResultPrettyFragment();
                 case 1:
-                    ResultRawFragment resultRawFragment = new ResultRawFragment();
-                    resultRawFragment.setArguments(bundle);
-                    return resultRawFragment;
+                    return new ResultRawFragment();
                 case 2:
-                    ResultPreviewFragment resultPreviewFragment = new ResultPreviewFragment();
-                    resultPreviewFragment.setArguments(bundle);
-                    return resultPreviewFragment;
+                    return new ResultPreviewFragment();
             }
             return null;
         }
@@ -212,9 +220,17 @@ public class ResultActivity extends AppCompatActivity {
 
         @Override
         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-            ResultActivity.this.responseBody = responseBody;
-            MyPagerAdapter pagerAdapter = new MyPagerAdapter
-                    (getSupportFragmentManager(), url, responseBody);
+            ResultActivity.responseBody = responseBody;
+            try {
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
+                        (cacheFile));
+                bos.write(responseBody);
+                bos.flush();
+                bos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
             viewPager.setAdapter(pagerAdapter);
             refreshView.setVisibility(View.GONE);
             viewPager.setVisibility(View.VISIBLE);
@@ -226,10 +242,18 @@ public class ResultActivity extends AppCompatActivity {
         @Override
         public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
                               Throwable error) {
-            ResultActivity.this.responseBody = responseBody;
+            ResultActivity.responseBody = responseBody;
             if (responseBody != null) {
-                MyPagerAdapter pagerAdapter = new MyPagerAdapter
-                        (getSupportFragmentManager(), url, responseBody);
+                try {
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
+                            (cacheFile));
+                    bos.write(responseBody);
+                    bos.flush();
+                    bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
                 viewPager.setAdapter(pagerAdapter);
             } else {
                 Bundle bundle = new Bundle();

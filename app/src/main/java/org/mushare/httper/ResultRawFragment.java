@@ -6,7 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 /**
  * Created by dklap on 5/4/2017.
@@ -18,11 +19,12 @@ public class ResultRawFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_raw_result, container, false);
-        TextView textView = (TextView) view.findViewById(R.id.textView);
-        Bundle bundle = getArguments();
-        byte[] data;
-        if (bundle != null && (data = bundle.getByteArray("content")) != null)
-            textView.setText(new String(data));
+        ListView listView = (ListView) view.findViewById(R.id.listView);
+        if (ResultActivity.responseBody != null) {
+            String[] texts = new String(ResultActivity.responseBody).split("\n");
+            listView.setAdapter(new ArrayAdapter<>(getContext(), R
+                    .layout.fragment_result_textview, texts));
+        }
         return view;
     }
 }

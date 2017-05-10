@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
 
+import java.util.ArrayList;
+
 /**
  * Created by dklap on 5/4/2017.
  */
@@ -13,10 +15,10 @@ public class MyJSONArray extends JSONArray {
         super(new JSONTokener(json));
     }
 
-    public CharSequence getCharSequence(int indentSpaces) throws JSONException {
+    public ArrayList<CharSequence> getCharSequences(int indentSpaces) throws JSONException {
         MyJSONStringer stringer = new MyJSONStringer(indentSpaces);
         writeTo(stringer);
-        return stringer.getCharSequence();
+        return stringer.getCharSequences();
     }
 
     private void writeTo(MyJSONStringer stringer) throws JSONException {
@@ -26,5 +28,6 @@ public class MyJSONArray extends JSONArray {
             stringer.value(object);
         }
         stringer.endArray();
+        stringer.preGetCharSequences();
     }
 }

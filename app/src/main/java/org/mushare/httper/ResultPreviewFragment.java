@@ -29,11 +29,10 @@ public class ResultPreviewFragment extends Fragment {
 //        webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
-        Bundle bundle = getArguments();
-        byte[] data;
-        if (bundle != null && (data = bundle.getByteArray("content")) != null)
+        if (ResultActivity.responseBody != null)
             try {
-                webview.loadDataWithBaseURL(bundle.getString("baseUrl"), new String(data,
+                webview.loadDataWithBaseURL(ResultActivity.url, new String(ResultActivity
+                        .responseBody,
                         "UTF-8"), "text/html", null, null);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

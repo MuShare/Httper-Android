@@ -8,11 +8,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by dklap on 5/4/2017.
@@ -21,9 +24,9 @@ import java.lang.ref.WeakReference;
 public class ResultPrettyFragment extends Fragment {
     static final int MSG_DONE = 0;
 
-    CharSequence text;
+    ArrayList<CharSequence> texts;
     View refreshingView;
-    TextView textView;
+    ListView listView;
 
     MyHandler myHandler = new MyHandler(this);
 
@@ -32,28 +35,25 @@ public class ResultPrettyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
     final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pretty_result, container, false);
-        textView = (TextView) view.findViewById(R.id.textView);
+        listView = (ListView) view.findViewById(R.id.listView);
         refreshingView = view.findViewById(R.id.refreshingView);
 
         new Thread() {
             @Override
             public void run() {
-                if (savedInstanceState != null) {
-                    text = savedInstanceState.getCharSequence("text");
-                }
-                if (text == null) {
-                    Bundle bundle = getArguments();
-                    byte[] data;
-                    if (bundle != null && (data = bundle.getByteArray("content")) != null) {
-                        text = new String(data);
+                if (texts == null) {
+                    if (ResultActivity.responseBody != null) {
+                        String text = new String(ResultActivity.responseBody);
                         try {
-                            MyJSONObject jsonObject = new MyJSONObject(text.toString());
-                            text = jsonObject.getCharSequence(2);
+                            MyJSONObject jsonObject = new MyJSONObject(text);
+                            texts = jsonObject.getCharSequences(2);
                         } catch (JSONException e) {
                             try {
-                                MyJSONArray jsonArray = new MyJSONArray(text.toString());
-                                text = jsonArray.getCharSequence(2);
+                                MyJSONArray jsonArray = new MyJSONArray(text);
+                                texts = jsonArray.getCharSequences(2);
                             } catch (JSONException e1) {
+                                texts = new ArrayList<>();
+                                texts.addAll(Arrays.asList(text.split("\n")));
                             }
                         }
                     }
@@ -63,12 +63,6 @@ public class ResultPrettyFragment extends Fragment {
         }.start();
 
         return view;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putCharSequence("text", text);
     }
 
     private static class MyHandler extends Handler {
@@ -84,7 +78,8 @@ public class ResultPrettyFragment extends Fragment {
                 ResultPrettyFragment fragment = mFragment.get();
                 if (fragment != null) {
                     fragment.refreshingView.setVisibility(View.GONE);
-                    fragment.textView.setText(fragment.text);
+                    fragment.listView.setAdapter(new ArrayAdapter<>(fragment.getContext(), R
+                            .layout.fragment_result_textview, fragment.texts));
                 }
             }
         }

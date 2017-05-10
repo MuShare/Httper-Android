@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.SpannedString;
 import android.text.style.ForegroundColorSpan;
 
 import org.json.JSONArray;
@@ -33,69 +34,25 @@ import java.util.List;
 
 
 public class MyJSONStringer {
-    private final int COLOR_ATOM = Color.parseColor("#AE81FF");
-    private final int COLOR_NAME = Color.parseColor("#F92672");
-    private final int COLOR_STRING = Color.parseColor("#FFAB40");
     /**
      * The output data, containing at most one top-level array or object.
      */
-    final SpannableStringBuilder out = new SpannableStringBuilder();
-
-    /**
-     * Lexical scoping elements within this stringer, necessary to insert the
-     * appropriate separator characters (ie. commas and colons) and to detect
-     * nesting errors.
-     */
-    enum Scope {
-
-        /**
-         * An array with no elements requires no separators or newlines before
-         * it is closed.
-         */
-        EMPTY_ARRAY,
-
-        /**
-         * A array with at least one value requires a comma and newline before
-         * the next element.
-         */
-        NONEMPTY_ARRAY,
-
-        /**
-         * An object with no keys or values requires no separators or newlines
-         * before it is closed.
-         */
-        EMPTY_OBJECT,
-
-        /**
-         * An object whose most recent element is a key. The next element must
-         * be a value.
-         */
-        DANGLING_KEY,
-
-        /**
-         * An object with at least one name/value pair requires a comma and
-         * newline before the next element.
-         */
-        NONEMPTY_OBJECT,
-
-        /**
-         * A special bracketless array needed by MyJSONStringer.join() and
-         * JSONObject.quote() only. Not used for JSON encoding.
-         */
-        NULL,
-    }
-
+    final SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+    final ArrayList<CharSequence> out = new ArrayList<>();
+    private final int COLOR_ATOM = Color.parseColor("#AE81FF");
+    private final int COLOR_NAME = Color.parseColor("#F92672");
+    private final int COLOR_STRING = Color.parseColor("#FFAB40");
     /**
      * Unlike the original implementation, this stack isn't limited to 20
      * levels of nesting.
      */
     private final List<Scope> stack = new ArrayList<Scope>();
-
     /**
      * A string containing a full set of spaces for a single level of
      * indentation, or null for no pretty printing.
      */
     private final String indent;
+    private int count = 1;
 
     public MyJSONStringer() {
         indent = null;
@@ -150,12 +107,12 @@ public class MyJSONStringer {
      * bracket.
      */
     MyJSONStringer open(Scope empty, String openBracket) throws JSONException {
-        if (stack.isEmpty() && out.length() > 0) {
+        if (stack.isEmpty() && stringBuilder.length() > 0) {
             throw new JSONException("Nesting problem: multiple top-level roots");
         }
         beforeValue();
         stack.add(empty);
-        out.append(openBracket);
+        stringBuilder.append(openBracket);
         return this;
     }
 
@@ -173,7 +130,7 @@ public class MyJSONStringer {
         if (context == nonempty) {
             newline();
         }
-        out.append(closeBracket);
+        stringBuilder.append(closeBracket);
         return this;
     }
 
@@ -246,10 +203,11 @@ public class MyJSONStringer {
         if (value == null
                 || value instanceof Boolean
                 || value == JSONObject.NULL) {
-            out.append(getColoredString(String.valueOf(value), COLOR_ATOM));
+            stringBuilder.append(getColoredString(String.valueOf(value), COLOR_ATOM));
 
         } else if (value instanceof Number) {
-            out.append(getColoredString(JSONObject.numberToString((Number) value), COLOR_ATOM));
+            stringBuilder.append(getColoredString(JSONObject.numberToString((Number) value),
+                    COLOR_ATOM));
         } else {
             string(value.toString(), false);
         }
@@ -267,7 +225,7 @@ public class MyJSONStringer {
             throw new JSONException("Nesting problem");
         }
         beforeValue();
-        out.append(getColoredString(String.valueOf(value), COLOR_ATOM));
+        stringBuilder.append(getColoredString(String.valueOf(value), COLOR_ATOM));
         return this;
     }
 
@@ -283,7 +241,7 @@ public class MyJSONStringer {
             throw new JSONException("Nesting problem");
         }
         beforeValue();
-        out.append(getColoredString(JSONObject.numberToString(value), COLOR_ATOM));
+        stringBuilder.append(getColoredString(JSONObject.numberToString(value), COLOR_ATOM));
         return this;
     }
 
@@ -297,7 +255,7 @@ public class MyJSONStringer {
             throw new JSONException("Nesting problem");
         }
         beforeValue();
-        out.append(getColoredString(String.valueOf(value), COLOR_ATOM));
+        stringBuilder.append(getColoredString(String.valueOf(value), COLOR_ATOM));
         return this;
     }
 
@@ -322,42 +280,42 @@ public class MyJSONStringer {
 
                 case '\t':
                     if (tmp.length() > 0) {
-                        out.append(getColoredString(tmp.toString(), color));
+                        stringBuilder.append(getColoredString(tmp.toString(), color));
                         tmp.setLength(0);
                     }
-                    out.append(getColoredString("\\t", COLOR_ATOM));
+                    stringBuilder.append(getColoredString("\\t", COLOR_ATOM));
                     break;
 
                 case '\b':
                     if (tmp.length() > 0) {
-                        out.append(getColoredString(tmp.toString(), color));
+                        stringBuilder.append(getColoredString(tmp.toString(), color));
                         tmp.setLength(0);
                     }
-                    out.append(getColoredString("\\b", COLOR_ATOM));
+                    stringBuilder.append(getColoredString("\\b", COLOR_ATOM));
                     break;
 
                 case '\n':
                     if (tmp.length() > 0) {
-                        out.append(getColoredString(tmp.toString(), color));
+                        stringBuilder.append(getColoredString(tmp.toString(), color));
                         tmp.setLength(0);
                     }
-                    out.append(getColoredString("\\n", COLOR_ATOM));
+                    stringBuilder.append(getColoredString("\\n", COLOR_ATOM));
                     break;
 
                 case '\r':
                     if (tmp.length() > 0) {
-                        out.append(getColoredString(tmp.toString(), color));
+                        stringBuilder.append(getColoredString(tmp.toString(), color));
                         tmp.setLength(0);
                     }
-                    out.append(getColoredString("\\r", COLOR_ATOM));
+                    stringBuilder.append(getColoredString("\\r", COLOR_ATOM));
                     break;
 
                 case '\f':
                     if (tmp.length() > 0) {
-                        out.append(getColoredString(tmp.toString(), color));
+                        stringBuilder.append(getColoredString(tmp.toString(), color));
                         tmp.setLength(0);
                     }
-                    out.append(getColoredString("\\f", COLOR_ATOM));
+                    stringBuilder.append(getColoredString("\\f", COLOR_ATOM));
                     break;
 
                 default:
@@ -371,7 +329,7 @@ public class MyJSONStringer {
 
         }
         tmp.append("\"");
-        out.append(getColoredString(tmp.toString(), color));
+        stringBuilder.append(getColoredString(tmp.toString(), color));
     }
 
     private void newline() {
@@ -379,9 +337,18 @@ public class MyJSONStringer {
             return;
         }
 
-        out.append("\n");
+        if (count >= 15) {
+            out.add(SpannedString.valueOf(stringBuilder));
+            stringBuilder.clear();
+            count = 1;
+        } else {
+            stringBuilder.append('\n');
+            count++;
+        }
+
+
         for (int i = 0; i < stack.size(); i++) {
-            out.append(indent);
+            stringBuilder.append(indent);
         }
     }
 
@@ -407,7 +374,7 @@ public class MyJSONStringer {
     private void beforeKey() throws JSONException {
         Scope context = peek();
         if (context == Scope.NONEMPTY_OBJECT) { // first in object
-            out.append(',');
+            stringBuilder.append(',');
         } else if (context != Scope.EMPTY_OBJECT) { // not in an object!
             throw new JSONException("Nesting problem");
         }
@@ -430,32 +397,66 @@ public class MyJSONStringer {
             replaceTop(Scope.NONEMPTY_ARRAY);
             newline();
         } else if (context == Scope.NONEMPTY_ARRAY) { // another in array
-            out.append(',');
+            stringBuilder.append(',');
             newline();
         } else if (context == Scope.DANGLING_KEY) { // value for key
-            out.append(indent == null ? ":" : ": ");
+            stringBuilder.append(indent == null ? ":" : ": ");
             replaceTop(Scope.NONEMPTY_OBJECT);
         } else if (context != Scope.NULL) {
             throw new JSONException("Nesting problem");
         }
     }
 
-    /**
-     * Returns the encoded JSON string.
-     * <p>
-     * <p>If invoked with unterminated arrays or unclosed objects, this method's
-     * return value is undefined.
-     * <p>
-     * <p><strong>Warning:</strong> although it contradicts the general contract
-     * of {@link Object#toString}, this method returns null if the stringer
-     * contains no data.
-     */
-    @Override
-    public String toString() {
-        return out.length() == 0 ? null : out.toString();
+    public void preGetCharSequences() {
+        out.add(SpannedString.valueOf(stringBuilder));
+        stringBuilder.clear();
     }
 
-    public CharSequence getCharSequence() {
+    public ArrayList<CharSequence> getCharSequences() {
         return out;
+    }
+
+    /**
+     * Lexical scoping elements within this stringer, necessary to insert the
+     * appropriate separator characters (ie. commas and colons) and to detect
+     * nesting errors.
+     */
+    enum Scope {
+
+        /**
+         * An array with no elements requires no separators or newlines before
+         * it is closed.
+         */
+        EMPTY_ARRAY,
+
+        /**
+         * A array with at least one value requires a comma and newline before
+         * the next element.
+         */
+        NONEMPTY_ARRAY,
+
+        /**
+         * An object with no keys or values requires no separators or newlines
+         * before it is closed.
+         */
+        EMPTY_OBJECT,
+
+        /**
+         * An object whose most recent element is a key. The next element must
+         * be a value.
+         */
+        DANGLING_KEY,
+
+        /**
+         * An object with at least one name/value pair requires a comma and
+         * newline before the next element.
+         */
+        NONEMPTY_OBJECT,
+
+        /**
+         * A special bracketless array needed by MyJSONStringer.join() and
+         * JSONObject.quote() only. Not used for JSON encoding.
+         */
+        NULL,
     }
 }
