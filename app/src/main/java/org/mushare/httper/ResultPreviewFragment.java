@@ -24,7 +24,7 @@ public class ResultPreviewFragment extends Fragment {
                 false);
         webview.setInitialScale(100);
         WebSettings webSettings = webview.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+//        webSettings.setJavaScriptEnabled(true);
 //        webSettings.setLoadWithOverviewMode(true);
 //        webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(true);

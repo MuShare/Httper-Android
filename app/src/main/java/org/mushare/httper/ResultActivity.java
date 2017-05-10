@@ -14,6 +14,10 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageButton;
@@ -44,18 +48,24 @@ public class ResultActivity extends AppCompatActivity {
     static String url;
     static byte[] responseBody;
     final int DIALOG_ERROR_CONNECT = 0;
+
     RequestParams params;
     Header[] headers;
     String method;
+
     File cacheFile;
     boolean refreshing;
+    int statusCode;
+    CharSequence responseHeaders;
 
     MyTouchableLinearLayout toolbar;
     ViewPager viewPager;
+    TextView textViewStatusCode;
+    TextView textViewHeader;
     View refreshView;
     BottomSheetBehavior bottomSheetBehavior;
 
-    TextView responseURL;
+    TextView textViewURL;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,7 +74,9 @@ public class ResultActivity extends AppCompatActivity {
 
         toolbar = (MyTouchableLinearLayout) findViewById(R.id.appBar);
 
-        responseURL = (TextView) findViewById(R.id.textViewURL);
+        textViewURL = (TextView) findViewById(R.id.textViewURL);
+        textViewStatusCode = (TextView) findViewById(R.id.textViewStatusCode);
+        textViewHeader = (TextView) findViewById(R.id.textViewHeaders);
 
         viewPager = (ViewPager) findViewById(R.id.content);
         viewPager.setOffscreenPageLimit(2);
@@ -91,7 +103,7 @@ public class ResultActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         url = intent.getStringExtra("http") + intent.getStringExtra("url");
-        responseURL.setText(url);
+        textViewURL.setText(url);
         params = new RequestParams((HashMap) intent.getSerializableExtra("parameter"));
         HashMap<String, String> headerMap = (HashMap) intent.getSerializableExtra("header");
         List<Header> headerList = new ArrayList<>();
@@ -105,8 +117,10 @@ public class ResultActivity extends AppCompatActivity {
         String cacheFilePath;
         if (savedInstanceState == null || (cacheFilePath = savedInstanceState.getString
                 ("cacheFilePath")) == null || (refreshing = savedInstanceState.getBoolean
-                ("refreshing"))) {
-            cacheFile = new File(getCacheDir(), "response_cache");
+                ("refreshing")) || (statusCode = savedInstanceState.getInt("statusCode", -1)) ==
+                -1 || (responseHeaders = savedInstanceState.getCharSequence("responseHeaders")) ==
+                null) {
+            cacheFile = new File(getCacheDir(), "response_cache_" + System.currentTimeMillis());
             refresh();
         } else {
             cacheFile = new File(cacheFilePath);
@@ -122,6 +136,8 @@ public class ResultActivity extends AppCompatActivity {
                 }
                 MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
                 viewPager.setAdapter(pagerAdapter);
+                textViewStatusCode.setText(String.valueOf(statusCode));
+                textViewHeader.setText(responseHeaders);
             }
         }
 
@@ -129,6 +145,8 @@ public class ResultActivity extends AppCompatActivity {
         ViewCompat.setElevation(bottomSheet, TypedValue.applyDimension(TypedValue
                 .COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics()));
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        if (savedInstanceState != null)
+            bottomSheetBehavior.setState(savedInstanceState.getInt("bottomSheetState"));
 
         ImageButton buttonShowInfo = (ImageButton) findViewById(R.id.buttonShowInfo);
         CheatSheet.setup(buttonShowInfo);
@@ -157,6 +175,18 @@ public class ResultActivity extends AppCompatActivity {
             case "POST":
                 RestClient.post(this, url, headers, params, new MyAsyncHttpResponseHandler());
                 break;
+            case "HEAD":
+                RestClient.head(this, url, headers, params, new MyAsyncHttpResponseHandler());
+                break;
+            case "PUT":
+                RestClient.put(this, url, headers, params, new MyAsyncHttpResponseHandler());
+                break;
+            case "DELETE":
+                RestClient.delete(this, url, headers, params, new MyAsyncHttpResponseHandler());
+                break;
+            case "PATCH":
+                RestClient.patch(this, url, headers, params, new MyAsyncHttpResponseHandler());
+                break;
         }
     }
 
@@ -172,8 +202,10 @@ public class ResultActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("cacheFilePath", cacheFile.getAbsolutePath());
-        System.out.println(cacheFile.getPath() + ", " + cacheFile.getAbsoluteFile());
         outState.putBoolean("refreshing", refreshing);
+        outState.putInt("bottomSheetState", bottomSheetBehavior.getState());
+        outState.putInt("statusCode", statusCode);
+        outState.putCharSequence("responseHeaders", responseHeaders);
     }
 
     @Nullable
@@ -186,7 +218,48 @@ public class ResultActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 finish();
             }
-        }).setCancelable(false).create();
+        }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                finish();
+            }
+        }).create();
+    }
+
+//    private CharSequence[] headersToCharSequences(Header[] headers) {
+//        CharSequence[] out = new CharSequence[headers.length];
+//        for (int i = 0; i < headers.length; i++) {
+//            Spannable header = new SpannableString(headers[i].getName() + ": " + headers[i]
+//                    .getValue());
+//            header.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent)),
+//                    headers[i].getName().length() + 2, header.length(), Spannable
+//                            .SPAN_EXCLUSIVE_EXCLUSIVE);
+//            out[i] = header;
+//        }
+//        return out;
+//    }
+
+    private CharSequence headersToCharSequence(Header[] headers) {
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+        for (Header header : headers) {
+            spannableStringBuilder.append(header.getName());
+            spannableStringBuilder.append(": ");
+            Spannable value = new SpannableString(header.getValue());
+            value.setSpan(new ForegroundColorSpan(getResources().getColor(R.color
+                    .colorTextSecondary)), 0, value.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannableStringBuilder.append(value);
+            spannableStringBuilder.append("\n");
+        }
+        spannableStringBuilder.delete(spannableStringBuilder.length() - 1, spannableStringBuilder
+                .length());
+        return spannableStringBuilder;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        else super.onBackPressed();
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
@@ -221,6 +294,8 @@ public class ResultActivity extends AppCompatActivity {
         @Override
         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
             ResultActivity.responseBody = responseBody;
+            ResultActivity.this.statusCode = statusCode;
+            responseHeaders = headersToCharSequence(headers);
             try {
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
                         (cacheFile));
@@ -232,6 +307,8 @@ public class ResultActivity extends AppCompatActivity {
             }
             MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
             viewPager.setAdapter(pagerAdapter);
+            textViewStatusCode.setText(String.valueOf(statusCode));
+            textViewHeader.setText(responseHeaders);
             refreshView.setVisibility(View.GONE);
             viewPager.setVisibility(View.VISIBLE);
             toolbar.setAlpha(1f);
@@ -243,6 +320,8 @@ public class ResultActivity extends AppCompatActivity {
         public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
                               Throwable error) {
             ResultActivity.responseBody = responseBody;
+            ResultActivity.this.statusCode = statusCode;
+            responseHeaders = headersToCharSequence(headers);
             if (responseBody != null) {
                 try {
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
@@ -255,6 +334,8 @@ public class ResultActivity extends AppCompatActivity {
                 }
                 MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
                 viewPager.setAdapter(pagerAdapter);
+                textViewStatusCode.setText(String.valueOf(statusCode));
+                textViewHeader.setText(responseHeaders);
             } else {
                 Bundle bundle = new Bundle();
                 bundle.putString("errorMessage", error.getMessage());

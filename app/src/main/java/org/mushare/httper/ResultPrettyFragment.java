@@ -37,12 +37,12 @@ public class ResultPrettyFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_pretty_result, container, false);
         listView = (ListView) view.findViewById(R.id.listView);
         refreshingView = view.findViewById(R.id.refreshingView);
+        if (ResultActivity.responseBody != null) {
+            new Thread() {
+                @Override
+                public void run() {
 
-        new Thread() {
-            @Override
-            public void run() {
-                if (texts == null) {
-                    if (ResultActivity.responseBody != null) {
+                    if (texts == null) {
                         String text = new String(ResultActivity.responseBody);
                         try {
                             MyJSONObject jsonObject = new MyJSONObject(text);
@@ -57,11 +57,11 @@ public class ResultPrettyFragment extends Fragment {
                             }
                         }
                     }
-                }
-                myHandler.sendEmptyMessage(MSG_DONE);
-            }
-        }.start();
+                    myHandler.sendEmptyMessage(MSG_DONE);
 
+                }
+            }.start();
+        } else refreshingView.setVisibility(View.GONE);
         return view;
     }
 
