@@ -240,6 +240,7 @@ public class ResultActivity extends AppCompatActivity {
 //    }
 
     private CharSequence headersToCharSequence(Header[] headers) {
+        if (headers == null) return null;
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
         for (Header header : headers) {
             spannableStringBuilder.append(header.getName());
@@ -296,14 +297,16 @@ public class ResultActivity extends AppCompatActivity {
             ResultActivity.responseBody = responseBody;
             ResultActivity.this.statusCode = statusCode;
             responseHeaders = headersToCharSequence(headers);
-            try {
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
-                        (cacheFile));
-                bos.write(responseBody);
-                bos.flush();
-                bos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (responseBody != null) {
+                try {
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
+                            (cacheFile));
+                    bos.write(responseBody);
+                    bos.flush();
+                    bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
             viewPager.setAdapter(pagerAdapter);
@@ -320,9 +323,9 @@ public class ResultActivity extends AppCompatActivity {
         public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
                               Throwable error) {
             ResultActivity.responseBody = responseBody;
-            ResultActivity.this.statusCode = statusCode;
-            responseHeaders = headersToCharSequence(headers);
             if (responseBody != null) {
+                ResultActivity.this.statusCode = statusCode;
+                responseHeaders = headersToCharSequence(headers);
                 try {
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
                             (cacheFile));
