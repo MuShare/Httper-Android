@@ -37,5 +37,39 @@
         <item>http://</item>
         <item>https://</item>
     </string-array>
+    <string-array name="headers_array">
+        <item>Accept</item>
+        <item>Accept-Charset</item>
+        <item>Accept-Encoding</item>
+        <item>Accept-Language</item>
+        <item>Accept-Datetime</item>
+        <item>Authorization</item>
+        <item>Cache-Control</item>
+        <item>Connection</item>
+        <item>Content-Length</item>
+        <item>Content-MD5</item>
+        <item>Content-Type</item>
+        <item>Cookie</item>
+        <item>Date</item>
+        <item>Expect</item>
+        <item>Forwarded</item>
+        <item>From</item>
+        <item>Host</item>
+        <item>If-Match</item>
+        <item>If-Modified-Since</item>
+        <item>If-None-Match</item>
+        <item>If-Range</item>
+        <item>If-Unmodified-Since</item>
+        <item>Max-Forwards</item>
+        <item>Origin</item>
+        <item>Pragma</item>
+        <item>Proxy-Authorization</item>
+        <item>Range</item>
+        <item>Referer</item>
+        <item>User-Agent</item>
+        <item>Upgrade</item>
+        <item>Via</item>
+        <item>Warning</item>
+    </string-array>
 
 </resources>

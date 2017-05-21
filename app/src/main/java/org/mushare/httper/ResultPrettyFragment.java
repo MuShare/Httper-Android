@@ -79,7 +79,7 @@ public class ResultPrettyFragment extends Fragment {
                 if (fragment != null) {
                     fragment.refreshingView.setVisibility(View.GONE);
                     fragment.listView.setAdapter(new ArrayAdapter<>(fragment.getContext(), R
-                            .layout.fragment_result_textview, fragment.texts));
+                            .layout.list_result_textview, fragment.texts));
                 }
             }
         }

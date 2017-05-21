@@ -23,7 +23,7 @@ public class ResultRawFragment extends Fragment {
         if (ResultActivity.responseBody != null) {
             String[] texts = new String(ResultActivity.responseBody).split("\n");
             listView.setAdapter(new ArrayAdapter<>(getContext(), R
-                    .layout.fragment_result_textview, texts));
+                    .layout.list_result_textview, texts));
         }
         return view;
     }

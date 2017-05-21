@@ -7,6 +7,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -40,7 +42,8 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case HttpSettingListItem.TYPE_HEADER:
-                return new ViewHolderKeyValuePair(LayoutInflater.from(parent.getContext())
+                return new ViewHolderAutoCompleteKeyValuePair(LayoutInflater.from(parent
+                        .getContext())
                         .inflate(R.layout.http_setting_header, parent, false));
             case HttpSettingListItem.TYPE_PARAMETER:
                 return new ViewHolderKeyValuePair(LayoutInflater.from(parent.getContext())
@@ -161,6 +164,21 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
                 }
             });
             imageButtonRemove = (ImageButton) v.findViewById(R.id.imageButtonRemove);
+        }
+
+    }
+
+    // Provide a reference to the views for each data item
+    // Complex data items may need more than one view per item, and
+    // you provide access to all the views for a data item in a view holder
+    private static class ViewHolderAutoCompleteKeyValuePair extends ViewHolderKeyValuePair {
+
+        ViewHolderAutoCompleteKeyValuePair(View v) {
+            super(v);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(v.getContext(), android.R.layout
+                    .simple_dropdown_item_1line, v.getContext().getResources().getStringArray(R
+                    .array.headers_array));
+            ((AutoCompleteTextView) textViewKey).setAdapter(adapter);
         }
 
     }

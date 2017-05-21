@@ -21,7 +21,7 @@
         <org.mushare.httper.MyTouchableLinearLayout
             android:id="@+id/appBar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <android.support.design.widget.TabLayout
@@ -48,15 +48,10 @@
                     android:text="@string/result_view_preview"/>
             </android.support.design.widget.TabLayout>
 
-            <ImageButton
-                android:id="@+id/buttonShowInfo"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/result_view_response_info"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                app:srcCompat="@drawable/ic_action_info_outline"/>
+                android:layout_height="wrap_content"/>
 
         </org.mushare.httper.MyTouchableLinearLayout>
     </android.support.design.widget.AppBarLayout>

@@ -14,13 +14,14 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -39,6 +40,7 @@ import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.message.BasicHeader;
+
 
 /**
  * Created by dklap on 4/30/2017.
@@ -114,31 +116,26 @@ public class ResultActivity extends AppCompatActivity {
         headers = headerList.toArray(new Header[headerList.size()]);
         method = intent.getStringExtra("method");
 
-        String cacheFilePath;
-        if (savedInstanceState == null || (cacheFilePath = savedInstanceState.getString
-                ("cacheFilePath")) == null || (refreshing = savedInstanceState.getBoolean
-                ("refreshing")) || (statusCode = savedInstanceState.getInt("statusCode", -1)) ==
-                -1 || (responseHeaders = savedInstanceState.getCharSequence("responseHeaders")) ==
-                null) {
-            cacheFile = new File(getCacheDir(), "response_cache_" + System.currentTimeMillis());
+        cacheFile = new File(getCacheDir(), "response_cache");
+        if (savedInstanceState == null || (refreshing = savedInstanceState.getBoolean
+                ("refreshing"))) {
+            cacheFile.delete();
             refresh();
-        } else {
-            cacheFile = new File(cacheFilePath);
-            if (cacheFile.exists()) {
-                int size = (int) cacheFile.length();
-                responseBody = new byte[size];
-                try {
-                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream
-                            (cacheFile));
-                    buf.read(responseBody, 0, responseBody.length);
-                    buf.close();
-                } catch (Exception ignored) {
-                }
-                MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
-                viewPager.setAdapter(pagerAdapter);
-                textViewStatusCode.setText(String.valueOf(statusCode));
-                textViewHeader.setText(responseHeaders);
+        } else if (cacheFile.exists()) {
+            int size = (int) cacheFile.length();
+            responseBody = new byte[size];
+            try {
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(cacheFile));
+                buf.read(responseBody, 0, responseBody.length);
+                buf.close();
+            } catch (Exception ignored) {
             }
+            MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+            viewPager.setAdapter(pagerAdapter);
+            statusCode = savedInstanceState.getInt("statusCode");
+            responseHeaders = savedInstanceState.getCharSequence("responseHeaders");
+            textViewStatusCode.setText(String.valueOf(statusCode));
+            textViewHeader.setText(responseHeaders);
         }
 
         View bottomSheet = findViewById(R.id.bottom_sheet);
@@ -148,15 +145,16 @@ public class ResultActivity extends AppCompatActivity {
         if (savedInstanceState != null)
             bottomSheetBehavior.setState(savedInstanceState.getInt("bottomSheetState"));
 
-        ImageButton buttonShowInfo = (ImageButton) findViewById(R.id.buttonShowInfo);
-        CheatSheet.setup(buttonShowInfo);
-        buttonShowInfo.setOnClickListener(new View.OnClickListener() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu_result_activity);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onMenuItemClick(MenuItem item) {
                 if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                return true;
             }
         });
     }
@@ -201,7 +199,6 @@ public class ResultActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("cacheFilePath", cacheFile.getAbsolutePath());
         outState.putBoolean("refreshing", refreshing);
         outState.putInt("bottomSheetState", bottomSheetBehavior.getState());
         outState.putInt("statusCode", statusCode);
