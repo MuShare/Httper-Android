@@ -1,5 +1,6 @@
 package org.mushare.httper;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.text.Editable;
@@ -7,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
@@ -145,6 +147,16 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
 
                 }
             });
+            textViewKey.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        InputMethodManager keyboard = (InputMethodManager) textViewKey.getContext()
+                                .getSystemService(Context.INPUT_METHOD_SERVICE);
+                        keyboard.hideSoftInputFromWindow(textViewKey.getWindowToken(), 0);
+                    }
+                }
+            });
             textViewValue = (TextView) v.findViewById(R.id.textViewValue);
             textViewValue.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -163,6 +175,16 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
 
                 }
             });
+            textViewValue.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        InputMethodManager keyboard = (InputMethodManager) textViewValue
+                                .getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        keyboard.hideSoftInputFromWindow(textViewValue.getWindowToken(), 0);
+                    }
+                }
+            });
             imageButtonRemove = (ImageButton) v.findViewById(R.id.imageButtonRemove);
         }
 
@@ -175,9 +197,9 @@ public class HttpSettingListAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         ViewHolderAutoCompleteKeyValuePair(View v) {
             super(v);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(v.getContext(), android.R.layout
-                    .simple_dropdown_item_1line, v.getContext().getResources().getStringArray(R
-                    .array.headers_array));
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(textViewKey.getContext(), android.R
+                    .layout.simple_dropdown_item_1line, textViewKey.getContext().getResources()
+                    .getStringArray(R.array.headers_array));
             ((AutoCompleteTextView) textViewKey).setAdapter(adapter);
         }
 
