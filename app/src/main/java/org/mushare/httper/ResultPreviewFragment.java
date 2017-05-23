@@ -20,6 +20,7 @@ public class ResultPreviewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
+        String url = getArguments() == null ? null : getArguments().getString("url");
         WebView webview = (WebView) inflater.inflate(R.layout.fragment_preview_result, container,
                 false);
         webview.setInitialScale(100);
@@ -31,9 +32,8 @@ public class ResultPreviewFragment extends Fragment {
         webSettings.setDisplayZoomControls(false);
         if (ResultActivity.responseBody != null)
             try {
-                webview.loadDataWithBaseURL(ResultActivity.url, new String(ResultActivity
-                        .responseBody,
-                        "UTF-8"), "text/html", null, null);
+                webview.loadDataWithBaseURL(url, new String(ResultActivity.responseBody, "UTF-8")
+                        , "text/html", null, null);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }

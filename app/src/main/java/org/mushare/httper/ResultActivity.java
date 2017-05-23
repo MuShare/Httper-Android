@@ -47,13 +47,13 @@ import cz.msebera.android.httpclient.message.BasicHeader;
  */
 
 public class ResultActivity extends AppCompatActivity {
-    static String url;
     static byte[] responseBody;
     final int DIALOG_ERROR_CONNECT = 0;
 
     RequestParams params;
     Header[] headers;
     String method;
+    String url;
 
     File cacheFile;
     boolean refreshing;
@@ -191,7 +191,6 @@ public class ResultActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         RestClient.cancel(this);
-        url = null;
         responseBody = null;
         super.onDestroy();
     }
@@ -276,7 +275,10 @@ public class ResultActivity extends AppCompatActivity {
                 case 1:
                     return new ResultRawFragment();
                 case 2:
-                    return new ResultPreviewFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("url", url);
+                    return Fragment.instantiate(ResultActivity.this, ResultPreviewFragment.class
+                            .getName(), bundle);
             }
             return null;
         }
