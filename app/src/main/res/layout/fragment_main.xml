@@ -89,7 +89,7 @@
             android:layout_marginStart="8dp"
             android:background="@null"
             android:hint="@string/main_view_url_example"
-            android:imeOptions="actionDone"
+            android:imeOptions="actionDone|flagNoExtractUi"
             android:inputType="textUri"
             app:layout_constraintBottom_toBottomOf="@+id/spinnerHttp"
             app:layout_constraintLeft_toRightOf="@+id/spinnerHttp"
