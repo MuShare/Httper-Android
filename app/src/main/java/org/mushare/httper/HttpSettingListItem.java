@@ -1,5 +1,6 @@
 package org.mushare.httper;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Editable;
@@ -7,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
@@ -116,8 +118,13 @@ public class HttpSettingListItem extends AbstractSectionableItem<HttpSettingList
                     holder.textViewValue.setText(null);
                     return;
                 }
-                holder.textViewKey.clearFocus();
-                holder.textViewValue.clearFocus();
+                if (holder.itemView.hasFocus()) {
+                    holder.textViewKey.clearFocus();
+                    holder.textViewValue.clearFocus();
+                    InputMethodManager keyboard = (InputMethodManager) holder.itemView
+                            .getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    keyboard.hideSoftInputFromWindow(holder.itemView.getWindowToken(), 0);
+                }
                 adapter.removeItem(position);
             }
         });

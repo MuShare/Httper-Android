@@ -17,6 +17,7 @@
         android:completionThreshold="1"
         android:dropDownWidth="match_parent"
         android:hint="@string/main_view_key"
+        android:imeOptions="actionNext"
         android:inputType="textNoSuggestions"/>
 
     <EditText
@@ -26,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="7"
         android:hint="@string/main_view_value"
+        android:imeOptions="actionDone"
         android:inputType="textNoSuggestions"/>
 
     <ImageButton
