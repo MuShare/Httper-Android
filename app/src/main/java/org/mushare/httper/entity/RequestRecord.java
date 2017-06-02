@@ -16,7 +16,7 @@ import org.greenrobot.greendao.annotation.NotNull;
 public class RequestRecord {
 
     @Id
-    private Long rid;
+    private Long id;
 
     @NotNull
     private Long createAt;
@@ -35,15 +35,15 @@ public class RequestRecord {
 
 
     public RequestRecord(Long id) {
-        rid = id;
+        this.id = id;
     }
 
 
-    @Generated(hash = 1715581072)
-    public RequestRecord(Long rid, @NotNull Long createAt, @NotNull String method,
+    @Generated(hash = 578849419)
+    public RequestRecord(Long id, @NotNull Long createAt, @NotNull String method,
                          @NotNull String http, @NotNull String url, String headers,
                          String parameters) {
-        this.rid = rid;
+        this.id = id;
         this.createAt = createAt;
         this.method = method;
         this.http = http;
@@ -57,10 +57,6 @@ public class RequestRecord {
     public RequestRecord() {
     }
 
-
-    public Long getId() {
-        return rid;
-    }
 
     public Long getCreateAt() {
         return createAt;
@@ -103,20 +99,28 @@ public class RequestRecord {
     }
 
     public Long getRid() {
-        return this.rid;
+        return this.id;
     }
 
-    public void setRid(Long rid) {
-        this.rid = rid;
+    public void setRid(Long id) {
+        this.id = id;
     }
-
 
     public String getHttp() {
         return this.http;
     }
 
-
     public void setHttp(String http) {
         this.http = http;
+    }
+
+
+    public Long getId() {
+        return this.id;
+    }
+
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

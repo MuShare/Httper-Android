@@ -28,8 +28,6 @@ public class HttpSettingListItem extends AbstractSectionableItem<HttpSettingList
         .MyViewHolder, HttpSettingListTitle> implements Parcelable {
     public static final Parcelable.Creator<HttpSettingListItem> CREATOR = new
             Creator<HttpSettingListItem>() {
-
-
                 @Override
                 public HttpSettingListItem createFromParcel(Parcel source) {
                     return new HttpSettingListItem(HttpSettingListTitle.getInstance(source

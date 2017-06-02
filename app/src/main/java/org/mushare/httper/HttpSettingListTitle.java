@@ -36,6 +36,10 @@ public class HttpSettingListTitle extends AbstractHeaderItem<HttpSettingListTitl
         return instance;
     }
 
+    public static void clearCache() {
+        instances.clear();
+    }
+
     public int getType() {
         return type;
     }

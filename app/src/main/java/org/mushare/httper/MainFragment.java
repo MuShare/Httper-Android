@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.mushare.httper.entity.DaoSession;
 import org.mushare.httper.entity.RequestRecord;
@@ -27,17 +28,26 @@ import org.mushare.httper.utils.MyApp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.ISectionable;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by dklap on 5/22/2017.
  */
 
 public class MainFragment extends Fragment {
+    final int HISTORY_CODE = 0;
     FlexibleAdapter<HttpSettingListItem> adapter;
     RequestRecordDao requestRecordDao;
+
+    Spinner spinnerMethod;
+    Spinner spinnerHttp;
+    EditText editTextUrl;
+    RecyclerView recyclerView;
 
     @Override
     public void onAttach(Context context) {
@@ -46,14 +56,20 @@ public class MainFragment extends Fragment {
         requestRecordDao = daoSession.getRequestRecordDao();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        HttpSettingListTitle.clearCache();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        final Spinner spinnerMethod = (Spinner) view.findViewById(R.id.spinnerMethods);
-        final Spinner spinnerHttp = (Spinner) view.findViewById(R.id.spinnerHttp);
-        final EditText editTextUrl = (EditText) view.findViewById(R.id.editTextUrl);
+        spinnerMethod = (Spinner) view.findViewById(R.id.spinnerMethods);
+        spinnerHttp = (Spinner) view.findViewById(R.id.spinnerHttp);
+        editTextUrl = (EditText) view.findViewById(R.id.editTextUrl);
         final Button buttonSend = (Button) view.findViewById(R.id.buttonSend);
 
         editTextUrl.addTextChangedListener(new TextWatcher() {
@@ -105,7 +121,7 @@ public class MainFragment extends Fragment {
             }
         });
 
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -119,11 +135,9 @@ public class MainFragment extends Fragment {
         if (savedInstanceState == null) {
             ArrayList<HttpSettingListItem> dataSet = new ArrayList<>();
             dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
-                    (HttpSettingListTitle
-                            .TYPE_HEADER)));
+                    (HttpSettingListTitle.TYPE_HEADER)));
             dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
-                    (HttpSettingListTitle
-                            .TYPE_PARAMETER)));
+                    (HttpSettingListTitle.TYPE_PARAMETER)));
             adapter = new FlexibleAdapter<>(dataSet);
             adapter.setDisplayHeadersAtStartUp(true).setStickyHeaders(true);
         } else restoreAdapter(savedInstanceState);
@@ -166,7 +180,8 @@ public class MainFragment extends Fragment {
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
+                startActivityForResult(new Intent(getContext(), RequestHistoryActivity.class),
+                        HISTORY_CODE);
                 return true;
             }
         });
@@ -223,5 +238,61 @@ public class MainFragment extends Fragment {
                 savedInstanceState.getSerializable("dataSet");
         adapter = new FlexibleAdapter<>(dataSet);
         adapter.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == HISTORY_CODE && resultCode == RESULT_OK) {
+            RequestRecord requestRecord = requestRecordDao.queryBuilder().where(RequestRecordDao
+                    .Properties.Id.eq(data.getLongExtra("requestRecordId", -1L))).build().unique();
+            if (requestRecord == null) return;
+            spinnerMethod.setSelection(indexOfStringInArray(getResources().getStringArray(R.array
+                    .methods_array), requestRecord.getMethod()));
+            spinnerHttp.setSelection(indexOfStringInArray(getResources().getStringArray(R.array
+                    .http_array), requestRecord.getHttp()));
+            editTextUrl.setText(requestRecord.getUrl());
+            ArrayList<HttpSettingListItem> dataSet = new ArrayList<>();
+            try {
+                JSONObject header = new JSONObject(requestRecord.getHeaders());
+                JSONObject parameter = new JSONObject(requestRecord.getParameters());
+
+                if (header.length() == 0)
+                    dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
+                            (HttpSettingListTitle.TYPE_HEADER)));
+                else {
+                    Iterator<String> keys = header.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
+                                (HttpSettingListTitle.TYPE_HEADER), key, header.getString(key)));
+                    }
+                }
+
+                if (parameter.length() == 0)
+                    dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
+                            (HttpSettingListTitle.TYPE_PARAMETER)));
+                else {
+                    Iterator<String> keys = parameter.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
+                                (HttpSettingListTitle.TYPE_PARAMETER), key, parameter.getString
+                                (key)));
+                    }
+                }
+            } catch (JSONException ignored) {
+            }
+            adapter = new FlexibleAdapter<>(dataSet);
+            adapter.setDisplayHeadersAtStartUp(true).setStickyHeaders(true);
+            recyclerView.setAdapter(adapter);
+        } else super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    int indexOfStringInArray(String[] array, String s) {
+        if (array == null || s == null) return -1;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].equals(s)) return i;
+        }
+        return -1;
     }
 }
