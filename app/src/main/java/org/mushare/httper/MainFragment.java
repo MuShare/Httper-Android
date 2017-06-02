@@ -47,7 +47,6 @@ public class MainFragment extends Fragment {
     Spinner spinnerMethod;
     Spinner spinnerHttp;
     EditText editTextUrl;
-    RecyclerView recyclerView;
 
     @Override
     public void onAttach(Context context) {
@@ -121,7 +120,7 @@ public class MainFragment extends Fragment {
             }
         });
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -282,9 +281,7 @@ public class MainFragment extends Fragment {
                 }
             } catch (JSONException ignored) {
             }
-            adapter = new FlexibleAdapter<>(dataSet);
-            adapter.setDisplayHeadersAtStartUp(true).setStickyHeaders(true);
-            recyclerView.swapAdapter(adapter, true);
+            adapter.updateDataSet(dataSet);
         } else super.onActivityResult(requestCode, resultCode, data);
     }
 

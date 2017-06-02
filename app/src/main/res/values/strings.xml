@@ -17,9 +17,10 @@
     <string name="result_view_raw">Raw</string>
     <string name="result_view_preview">Preview</string>
     <string name="result_view_response_info">Response Information</string>
-    <string name="result_view_refreshing">Refreshing…</string>
+    <string name="result_view_refreshing">Wait a moment…</string>
 
     <string name="history_view_clear">Clear all</string>
+    <string name="history_view_empty">No history</string>
 
     <string name="response_url">Request URL</string>
     <string name="response_status">Status</string>

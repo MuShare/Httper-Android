@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -37,7 +38,8 @@ public class RequestHistoryActivity extends AppCompatActivity {
     FlexibleAdapter<HistoryListItem> adapter;
     RequestRecordDao requestRecordDao;
 
-    RecyclerView recyclerView;
+    Toolbar toolbar;
+    View emptyView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +48,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
         requestRecordDao = daoSession.getRequestRecordDao();
 
         setContentView(R.layout.activity_history);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -71,7 +73,9 @@ public class RequestHistoryActivity extends AppCompatActivity {
         } else restoreAdapter(savedInstanceState);
         recyclerView.setAdapter(adapter);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        emptyView = findViewById(R.id.emptyMessage);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_history_activity);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -80,6 +84,10 @@ public class RequestHistoryActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        if (adapter.getItemCount() == 0)
+            toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(false);
+        else emptyView.setVisibility(View.GONE);
     }
 
     @Override
@@ -90,8 +98,9 @@ public class RequestHistoryActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 requestRecordDao.deleteAll();
-                adapter = new FlexibleAdapter<>(new ArrayList<HistoryListItem>());
-                recyclerView.swapAdapter(adapter, false);
+                adapter.clear();
+                emptyView.setVisibility(View.VISIBLE);
+                toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(false);
             }
         }).setNegativeButton(R.string.dialog_cancel, null).create();
     }
