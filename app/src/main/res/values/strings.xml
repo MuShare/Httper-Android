@@ -10,6 +10,7 @@
     <string name="main_view_value">Value</string>
     <string name="main_view_add">Add</string>
     <string name="main_view_remove">Remove</string>
+    <string name="main_view_history">History</string>
 
     <string name="result_view_pretty">Pretty</string>
     <string name="result_view_raw">Raw</string>

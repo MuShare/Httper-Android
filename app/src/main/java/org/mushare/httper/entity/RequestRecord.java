@@ -25,6 +25,9 @@ public class RequestRecord {
     private String method;
 
     @NotNull
+    private String http;
+
+    @NotNull
     private String url;
 
     private String headers;
@@ -36,12 +39,14 @@ public class RequestRecord {
     }
 
 
-    @Generated(hash = 664537985)
+    @Generated(hash = 1715581072)
     public RequestRecord(Long rid, @NotNull Long createAt, @NotNull String method,
-                         @NotNull String url, String headers, String parameters) {
+                         @NotNull String http, @NotNull String url, String headers,
+                         String parameters) {
         this.rid = rid;
         this.createAt = createAt;
         this.method = method;
+        this.http = http;
         this.url = url;
         this.headers = headers;
         this.parameters = parameters;
@@ -103,5 +108,15 @@ public class RequestRecord {
 
     public void setRid(Long rid) {
         this.rid = rid;
+    }
+
+
+    public String getHttp() {
+        return this.http;
+    }
+
+
+    public void setHttp(String http) {
+        this.http = http;
     }
 }

@@ -7,15 +7,23 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import org.json.JSONObject;
+import org.mushare.httper.entity.DaoSession;
+import org.mushare.httper.entity.RequestRecord;
+import org.mushare.httper.entity.RequestRecordDao;
+import org.mushare.httper.utils.MyApp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +37,14 @@ import eu.davidea.flexibleadapter.items.ISectionable;
 
 public class MainFragment extends Fragment {
     FlexibleAdapter<HttpSettingListItem> adapter;
+    RequestRecordDao requestRecordDao;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        DaoSession daoSession = ((MyApp) getActivity().getApplication()).getDaoSession();
+        requestRecordDao = daoSession.getRequestRecordDao();
+    }
 
     @Nullable
     @Override
@@ -89,7 +105,7 @@ public class MainFragment extends Fragment {
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -126,6 +142,15 @@ public class MainFragment extends Fragment {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                RequestRecord requestRecord = new RequestRecord();
+                requestRecord.setCreateAt(System.currentTimeMillis());
+                requestRecord.setMethod(spinnerMethod.getSelectedItem().toString());
+                requestRecord.setHttp(spinnerHttp.getSelectedItem().toString());
+                requestRecord.setUrl(editTextUrl.getText().toString());
+                requestRecord.setHeaders(new JSONObject(getHeaders()).toString());
+                requestRecord.setParameters(new JSONObject(getParameters()).toString());
+                requestRecordDao.insert(requestRecord);
+
                 Intent intent = new Intent(getContext(), ResultActivity.class);
                 intent.putExtra("method", spinnerMethod.getSelectedItem().toString());
                 intent.putExtra("http", spinnerHttp.getSelectedItem().toString());
@@ -135,6 +160,17 @@ public class MainFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu_main_fragment);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                return true;
+            }
+        });
+
         return view;
     }
 
