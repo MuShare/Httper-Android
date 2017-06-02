@@ -284,7 +284,7 @@ public class MainFragment extends Fragment {
             }
             adapter = new FlexibleAdapter<>(dataSet);
             adapter.setDisplayHeadersAtStartUp(true).setStickyHeaders(true);
-            recyclerView.setAdapter(adapter);
+            recyclerView.swapAdapter(adapter, true);
         } else super.onActivityResult(requestCode, resultCode, data);
     }
 

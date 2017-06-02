@@ -1,11 +1,16 @@
 package org.mushare.httper;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
+import android.view.MenuItem;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -28,8 +33,11 @@ import eu.davidea.flexibleadapter.items.ISectionable;
  */
 
 public class RequestHistoryActivity extends AppCompatActivity {
+    final int CLEAR_HISTORY_DIALOG_ID = 0;
     FlexibleAdapter<HistoryListItem> adapter;
     RequestRecordDao requestRecordDao;
+
+    RecyclerView recyclerView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +46,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
         requestRecordDao = daoSession.getRequestRecordDao();
 
         setContentView(R.layout.activity_history);
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -62,6 +70,30 @@ public class RequestHistoryActivity extends AppCompatActivity {
             adapter.setDisplayHeadersAtStartUp(true);
         } else restoreAdapter(savedInstanceState);
         recyclerView.setAdapter(adapter);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu_history_activity);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                showDialog(CLEAR_HISTORY_DIALOG_ID);
+                return true;
+            }
+        });
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        return new AlertDialog.Builder(this).setTitle(R.string.dialog_warn).setMessage(R.string
+                .history_warn).setPositiveButton(R.string.dialog_ok, new DialogInterface
+                .OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                requestRecordDao.deleteAll();
+                adapter = new FlexibleAdapter<>(new ArrayList<HistoryListItem>());
+                recyclerView.swapAdapter(adapter, false);
+            }
+        }).setNegativeButton(R.string.dialog_cancel, null).create();
     }
 
     @Override

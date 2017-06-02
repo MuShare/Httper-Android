@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Httper</string>
+    <string name="history_name">History</string>
 
     <string name="main_view_method">Request Method</string>
     <string name="main_view_url_example">www.example.com</string>
@@ -18,13 +19,18 @@
     <string name="result_view_response_info">Response Information</string>
     <string name="result_view_refreshing">Refreshing…</string>
 
+    <string name="history_view_clear">Clear all</string>
+
     <string name="response_url">Request URL</string>
     <string name="response_status">Status</string>
     <string name="response_headers">Response Headers</string>
 
     <string name="error">Cannot access to the URL, check your connection and service provider!\n\nError Message:\n%s</string>
+    <string name="history_warn">Do you really want to clear the entire history?</string>
     <string name="dialog_error">Error</string>
+    <string name="dialog_warn">Warning</string>
     <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
 
     <string-array name="methods_array">
         <item>GET</item>
