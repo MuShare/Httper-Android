@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mushare.httper;
+package org.mushare.httper.utils;
 
 import android.graphics.Color;
 import android.text.Spannable;

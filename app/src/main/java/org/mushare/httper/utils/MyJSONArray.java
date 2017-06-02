@@ -1,4 +1,4 @@
-package org.mushare.httper;
+package org.mushare.httper.utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

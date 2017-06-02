@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.json.JSONException;
+import org.mushare.httper.utils.MyJSONArray;
+import org.mushare.httper.utils.MyJSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

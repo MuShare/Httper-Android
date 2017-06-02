@@ -27,6 +27,9 @@ import android.widget.TextView;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.mushare.httper.utils.RestClient;
+import org.mushare.httper.view.MyTouchableLinearLayout;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;

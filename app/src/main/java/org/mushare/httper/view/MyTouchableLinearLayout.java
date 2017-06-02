@@ -1,4 +1,4 @@
-package org.mushare.httper;
+package org.mushare.httper.view;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
