@@ -13,9 +13,11 @@ import android.text.format.DateFormat;
 import android.view.MenuItem;
 import android.view.View;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.IAdapter;
+import com.mikepenz.fastadapter.IItem;
+import com.mikepenz.fastadapter.adapters.ItemAdapter;
+
 import org.mushare.httper.entity.DaoSession;
 import org.mushare.httper.entity.RequestRecord;
 import org.mushare.httper.entity.RequestRecordDao;
@@ -25,21 +27,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.IHeader;
-import eu.davidea.flexibleadapter.items.ISectionable;
-
 /**
  * Created by dklap on 6/2/2017.
  */
 
 public class RequestHistoryActivity extends AppCompatActivity {
     final int CLEAR_HISTORY_DIALOG_ID = 0;
-    FlexibleAdapter<HistoryListItem> adapter;
     RequestRecordDao requestRecordDao;
-
     Toolbar toolbar;
     View emptyView;
+    private ItemAdapter<IItem> itemAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,30 +45,55 @@ public class RequestHistoryActivity extends AppCompatActivity {
         requestRecordDao = daoSession.getRequestRecordDao();
 
         setContentView(R.layout.activity_history);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
+        //create our adapters
+        FastAdapter<IItem> fastAdapter = new FastAdapter<>();
+        itemAdapter = new ItemAdapter<>();
+
+        //configure our fastAdapter
+        //as we provide id's for the items we want the hasStableIds enabled to speed up things
+        fastAdapter.setHasStableIds(true);
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
-        recyclerView.setItemViewCacheSize(50);
+//        recyclerView.setItemViewCacheSize(50);
 
         // use a linear layout manager
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(itemAdapter.wrap(fastAdapter));
         if (savedInstanceState == null) {
-            ArrayList<HistoryListItem> dataSet = new ArrayList<>();
+            ArrayList<IItem> dataSet = new ArrayList<>();
             List<RequestRecord> requestRecordList = requestRecordDao.queryBuilder().orderDesc
                     (RequestRecordDao.Properties.CreateAt).build().list();
+            String lastDate = null;
             for (RequestRecord requestRecord : requestRecordList) {
-                dataSet.add(new HistoryListItem(HistoryListTitle.getInstance(DateFormat
-                        .getMediumDateFormat(this).format(new Date(requestRecord.getCreateAt())))
-                        , requestRecord.getMethod(), requestRecord.getHttp() + requestRecord
-                        .getUrl(), requestRecord.getId()));
+                String date = DateFormat.getMediumDateFormat(this).format(new Date(requestRecord
+                        .getCreateAt()));
+                if (!date.equals(lastDate)) {
+                    dataSet.add(new HistoryListTitle(date));
+                    lastDate = date;
+                }
+                dataSet.add(new HistoryListItem(requestRecord.getMethod(), requestRecord.getHttp
+                        () + requestRecord.getUrl(), requestRecord.getId()));
             }
-            adapter = new FlexibleAdapter<>(dataSet);
-            adapter.setDisplayHeadersAtStartUp(true);
+            itemAdapter.set(dataSet);
         } else restoreAdapter(savedInstanceState);
-        recyclerView.setAdapter(adapter);
+        fastAdapter.withOnClickListener(new FastAdapter.OnClickListener<IItem>() {
+            @Override
+            public boolean onClick(View v, IAdapter<IItem> adapter, IItem item, int position) {
+                if (item instanceof HistoryListItem) {
+                    Intent intent = new Intent();
+                    intent.putExtra("requestRecordId", ((HistoryListItem) item).getId());
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+                return false;
+            }
+        });
+
 
         emptyView = findViewById(R.id.emptyMessage);
 
@@ -85,7 +107,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
             }
         });
 
-        if (adapter.getItemCount() == 0)
+        if (itemAdapter.getAdapterItemCount() == 0)
             toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(false);
         else emptyView.setVisibility(View.GONE);
     }
@@ -98,7 +120,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 requestRecordDao.deleteAll();
-                adapter.clear();
+                itemAdapter.clear();
                 emptyView.setVisibility(View.VISIBLE);
                 toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(false);
             }
@@ -112,51 +134,14 @@ public class RequestHistoryActivity extends AppCompatActivity {
     }
 
     private void saveAdapter(Bundle outState) {
-        ArrayList<ISectionable> dataSet = new ArrayList<>();
-        for (IHeader header : adapter.getHeaderItems())
-            dataSet.addAll(adapter.getSectionItems(header));
+        outState = itemAdapter.getFastAdapter().saveInstanceState(outState);
+        ArrayList<IItem> dataSet = new ArrayList<>(itemAdapter.getAdapterItems());
         outState.putSerializable("dataSet", dataSet);
-        adapter.onSaveInstanceState(outState);
     }
 
     private void restoreAdapter(Bundle savedInstanceState) {
-        ArrayList<HistoryListItem> dataSet = (ArrayList<HistoryListItem>) savedInstanceState
-                .getSerializable("dataSet");
-        adapter = new FlexibleAdapter<>(dataSet);
-        adapter.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        HistoryListTitle.clearCache();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onItemClickEvent(ItemClickEvent event) {
-        Intent intent = new Intent();
-        intent.putExtra("requestRecordId", event.id);
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-
-    static class ItemClickEvent {
-        Long id;
-
-        ItemClickEvent(long id) {
-            this.id = id;
-        }
+        ArrayList<IItem> dataSet = (ArrayList<IItem>) savedInstanceState.getSerializable("dataSet");
+        itemAdapter.set(dataSet);
+        itemAdapter.getFastAdapter().withSavedInstanceState(savedInstanceState);
     }
 }

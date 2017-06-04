@@ -41,7 +41,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class MainFragment extends Fragment {
     final int HISTORY_CODE = 0;
-    FlexibleAdapter<HttpSettingListItem> adapter;
+    FlexibleAdapter<RequestHeaderAndParamListItem> adapter;
     RequestRecordDao requestRecordDao;
 
     Spinner spinnerMethod;
@@ -58,7 +58,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        HttpSettingListTitle.clearCache();
+        RequestStickTitleAdapter.clearCache();
     }
 
     @Nullable
@@ -132,11 +132,11 @@ public class MainFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         if (savedInstanceState == null) {
-            ArrayList<HttpSettingListItem> dataSet = new ArrayList<>();
-            dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
-                    (HttpSettingListTitle.TYPE_HEADER)));
-            dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
-                    (HttpSettingListTitle.TYPE_PARAMETER)));
+            ArrayList<RequestHeaderAndParamListItem> dataSet = new ArrayList<>();
+            dataSet.add(new RequestHeaderAndParamListItem(RequestStickTitleAdapter.getInstance
+                    (RequestStickTitleAdapter.TYPE_HEADER)));
+            dataSet.add(new RequestHeaderAndParamListItem(RequestStickTitleAdapter.getInstance
+                    (RequestStickTitleAdapter.TYPE_PARAMETER)));
             adapter = new FlexibleAdapter<>(dataSet);
             adapter.setDisplayHeadersAtStartUp(true).setStickyHeaders(true);
         } else restoreAdapter(savedInstanceState);
@@ -190,9 +190,9 @@ public class MainFragment extends Fragment {
 
     public HashMap<String, String> getHeaders() {
         HashMap<String, String> header = new HashMap<>();
-        for (ISectionable sectionable : adapter.getSectionItems(HttpSettingListTitle.getInstance
-                (HttpSettingListTitle.TYPE_HEADER))) {
-            HttpSettingListItem item = (HttpSettingListItem) sectionable;
+        for (ISectionable sectionable : adapter.getSectionItems(RequestStickTitleAdapter.getInstance
+                (RequestStickTitleAdapter.TYPE_HEADER))) {
+            RequestHeaderAndParamListItem item = (RequestHeaderAndParamListItem) sectionable;
             String key;
             if ((key = item.getKey()) != null && !key.isEmpty()) {
                 String value = item.getValue();
@@ -204,9 +204,9 @@ public class MainFragment extends Fragment {
 
     public HashMap<String, String> getParameters() {
         HashMap<String, String> param = new HashMap<>();
-        for (ISectionable sectionable : adapter.getSectionItems(HttpSettingListTitle.getInstance
-                (HttpSettingListTitle.TYPE_PARAMETER))) {
-            HttpSettingListItem item = (HttpSettingListItem) sectionable;
+        for (ISectionable sectionable : adapter.getSectionItems(RequestStickTitleAdapter.getInstance
+                (RequestStickTitleAdapter.TYPE_PARAMETER))) {
+            RequestHeaderAndParamListItem item = (RequestHeaderAndParamListItem) sectionable;
             String key;
             if ((key = item.getKey()) != null && !key.isEmpty()) {
                 String value = item.getValue();
@@ -224,16 +224,17 @@ public class MainFragment extends Fragment {
 
     private void saveAdapter(Bundle outState) {
         ArrayList<ISectionable> dataSet = new ArrayList<>();
-        dataSet.addAll(adapter.getSectionItems(HttpSettingListTitle.getInstance(HttpSettingListTitle
+        dataSet.addAll(adapter.getSectionItems(RequestStickTitleAdapter.getInstance
+                (RequestStickTitleAdapter
                 .TYPE_HEADER)));
-        dataSet.addAll(adapter.getSectionItems(HttpSettingListTitle.getInstance(HttpSettingListTitle
+        dataSet.addAll(adapter.getSectionItems(RequestStickTitleAdapter.getInstance(RequestStickTitleAdapter
                 .TYPE_PARAMETER)));
         outState.putSerializable("dataSet", dataSet);
         adapter.onSaveInstanceState(outState);
     }
 
     private void restoreAdapter(Bundle savedInstanceState) {
-        ArrayList<HttpSettingListItem> dataSet = (ArrayList<HttpSettingListItem>)
+        ArrayList<RequestHeaderAndParamListItem> dataSet = (ArrayList<RequestHeaderAndParamListItem>)
                 savedInstanceState.getSerializable("dataSet");
         adapter = new FlexibleAdapter<>(dataSet);
         adapter.onRestoreInstanceState(savedInstanceState);
@@ -250,32 +251,35 @@ public class MainFragment extends Fragment {
             spinnerHttp.setSelection(indexOfStringInArray(getResources().getStringArray(R.array
                     .http_array), requestRecord.getHttp()));
             editTextUrl.setText(requestRecord.getUrl());
-            ArrayList<HttpSettingListItem> dataSet = new ArrayList<>();
+            ArrayList<RequestHeaderAndParamListItem> dataSet = new ArrayList<>();
             try {
                 JSONObject header = new JSONObject(requestRecord.getHeaders());
                 JSONObject parameter = new JSONObject(requestRecord.getParameters());
 
                 if (header.length() == 0)
-                    dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
-                            (HttpSettingListTitle.TYPE_HEADER)));
+                    dataSet.add(new RequestHeaderAndParamListItem(RequestStickTitleAdapter
+                            .getInstance
+                            (RequestStickTitleAdapter.TYPE_HEADER)));
                 else {
                     Iterator<String> keys = header.keys();
                     while (keys.hasNext()) {
                         String key = keys.next();
-                        dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
-                                (HttpSettingListTitle.TYPE_HEADER), key, header.getString(key)));
+                        dataSet.add(new RequestHeaderAndParamListItem(RequestStickTitleAdapter
+                                .getInstance
+                                (RequestStickTitleAdapter.TYPE_HEADER), key, header.getString(key)));
                     }
                 }
 
                 if (parameter.length() == 0)
-                    dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
-                            (HttpSettingListTitle.TYPE_PARAMETER)));
+                    dataSet.add(new RequestHeaderAndParamListItem(RequestStickTitleAdapter.getInstance
+                            (RequestStickTitleAdapter.TYPE_PARAMETER)));
                 else {
                     Iterator<String> keys = parameter.keys();
                     while (keys.hasNext()) {
                         String key = keys.next();
-                        dataSet.add(new HttpSettingListItem(HttpSettingListTitle.getInstance
-                                (HttpSettingListTitle.TYPE_PARAMETER), key, parameter.getString
+                        dataSet.add(new RequestHeaderAndParamListItem(RequestStickTitleAdapter
+                                .getInstance
+                                (RequestStickTitleAdapter.TYPE_PARAMETER), key, parameter.getString
                                 (key)));
                     }
                 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="history_list_item" type="id"/>
+    <item name="history_list_title" type="id"/>
+</resources>
