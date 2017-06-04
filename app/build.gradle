@@ -31,7 +31,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.android.support:design:25.3.1'
-    compile 'com.mikepenz:fastadapter:2.5.3@aar'
+    compile 'com.mikepenz:fastadapter-commons:2.6.0@aar'
+    compile 'com.mikepenz:fastadapter:2.6.0@aar'
     compile 'org.greenrobot:greendao:3.2.2'
-    compile 'org.greenrobot:eventbus:3.0.0'
 }

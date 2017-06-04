@@ -16,7 +16,7 @@ import android.view.View;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItem;
-import com.mikepenz.fastadapter.adapters.ItemAdapter;
+import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 
 import org.mushare.httper.entity.DaoSession;
 import org.mushare.httper.entity.RequestRecord;
@@ -36,7 +36,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
     RequestRecordDao requestRecordDao;
     Toolbar toolbar;
     View emptyView;
-    private ItemAdapter<IItem> itemAdapter;
+    private FastItemAdapter<IItem> itemAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,12 +47,11 @@ public class RequestHistoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_history);
 
         //create our adapters
-        FastAdapter<IItem> fastAdapter = new FastAdapter<>();
-        itemAdapter = new ItemAdapter<>();
+        itemAdapter = new FastItemAdapter<>();
 
         //configure our fastAdapter
         //as we provide id's for the items we want the hasStableIds enabled to speed up things
-        fastAdapter.setHasStableIds(true);
+        itemAdapter.setHasStableIds(true);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         // use this setting to improve performance if you know that changes
@@ -63,7 +62,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
         // use a linear layout manager
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(itemAdapter.wrap(fastAdapter));
+        recyclerView.setAdapter(itemAdapter);
         if (savedInstanceState == null) {
             ArrayList<IItem> dataSet = new ArrayList<>();
             List<RequestRecord> requestRecordList = requestRecordDao.queryBuilder().orderDesc
@@ -81,7 +80,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
             }
             itemAdapter.set(dataSet);
         } else restoreAdapter(savedInstanceState);
-        fastAdapter.withOnClickListener(new FastAdapter.OnClickListener<IItem>() {
+        itemAdapter.withOnClickListener(new FastAdapter.OnClickListener<IItem>() {
             @Override
             public boolean onClick(View v, IAdapter<IItem> adapter, IItem item, int position) {
                 if (item instanceof HistoryListItem) {
@@ -134,7 +133,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
     }
 
     private void saveAdapter(Bundle outState) {
-        outState = itemAdapter.getFastAdapter().saveInstanceState(outState);
+        outState = itemAdapter.saveInstanceState(outState);
         ArrayList<IItem> dataSet = new ArrayList<>(itemAdapter.getAdapterItems());
         outState.putSerializable("dataSet", dataSet);
     }
@@ -142,6 +141,6 @@ public class RequestHistoryActivity extends AppCompatActivity {
     private void restoreAdapter(Bundle savedInstanceState) {
         ArrayList<IItem> dataSet = (ArrayList<IItem>) savedInstanceState.getSerializable("dataSet");
         itemAdapter.set(dataSet);
-        itemAdapter.getFastAdapter().withSavedInstanceState(savedInstanceState);
+        itemAdapter.withSavedInstanceState(savedInstanceState);
     }
 }
