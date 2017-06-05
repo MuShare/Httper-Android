@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * Created by dklap on 5/4/2017.
  */
@@ -31,12 +29,7 @@ public class ResultPreviewFragment extends Fragment {
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
         if (ResultActivity.responseBody != null)
-            try {
-                webview.loadDataWithBaseURL(url, new String(ResultActivity.responseBody, "UTF-8")
-                        , "text/html", null, null);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            webview.loadDataWithBaseURL(url, ResultActivity.responseBody, "text/html", null, null);
         return webview;
     }
 }

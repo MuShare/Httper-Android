@@ -18,14 +18,20 @@ import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.mushare.httper.entity.DaoSession;
 import org.mushare.httper.entity.RequestRecord;
 import org.mushare.httper.entity.RequestRecordDao;
 import org.mushare.httper.utils.MyApp;
+import org.mushare.httper.utils.MyPair;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static org.mushare.httper.utils.HttpUtils.combineUrl;
+import static org.mushare.httper.utils.HttpUtils.jsonArrayToPairList;
 
 /**
  * Created by dklap on 6/2/2017.
@@ -75,8 +81,15 @@ public class RequestHistoryActivity extends AppCompatActivity {
                     dataSet.add(new HistoryListTitle(date));
                     lastDate = date;
                 }
-                dataSet.add(new HistoryListItem(requestRecord.getMethod(), requestRecord.getHttp
-                        () + requestRecord.getUrl(), requestRecord.getId()));
+                String url = requestRecord.getHttp() + requestRecord.getUrl();
+                try {
+                    List<MyPair> list = jsonArrayToPairList(new JSONArray(requestRecord
+                            .getParameters()));
+                    url = combineUrl(url, list);
+                } catch (JSONException ignore) {
+                }
+                dataSet.add(new HistoryListItem(requestRecord.getMethod(), url, requestRecord
+                        .getId()));
             }
             itemAdapter.set(dataSet);
         } else restoreAdapter(savedInstanceState);

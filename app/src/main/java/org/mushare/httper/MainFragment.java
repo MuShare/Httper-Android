@@ -24,23 +24,25 @@ import android.widget.Spinner;
 import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.mushare.httper.entity.DaoSession;
 import org.mushare.httper.entity.RequestRecord;
 import org.mushare.httper.entity.RequestRecordDao;
 import org.mushare.httper.utils.MyApp;
+import org.mushare.httper.utils.MyPair;
 import org.mushare.httper.utils.RequestSettingDataUtils;
 import org.mushare.httper.view.MyStickyHeader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 
 import me.grantland.widget.AutofitHelper;
 
 import static android.app.Activity.RESULT_OK;
+import static org.mushare.httper.utils.HttpUtils.jsonArrayToPairList;
+import static org.mushare.httper.utils.HttpUtils.pairListToJSONArray;
 
 /**
  * Created by dklap on 5/22/2017.
@@ -202,8 +204,8 @@ public class MainFragment extends Fragment {
                 requestRecord.setMethod(spinnerMethod.getSelectedItem().toString());
                 requestRecord.setHttp(spinnerHttp.getSelectedItem().toString());
                 requestRecord.setUrl(editTextUrl.getText().toString());
-                requestRecord.setHeaders(new JSONObject(getHeaders()).toString());
-                requestRecord.setParameters(new JSONObject(getParameters()).toString());
+                requestRecord.setHeaders(pairListToJSONArray(getHeaders()).toString());
+                requestRecord.setParameters(pairListToJSONArray(getParameters()).toString());
                 requestRecordDao.insert(requestRecord);
 
                 Intent intent = new Intent(getContext(), ResultActivity.class);
@@ -248,8 +250,8 @@ public class MainFragment extends Fragment {
                 (RequestSettingType.parameter)));
     }
 
-    public HashMap<String, String> getHeaders() {
-        HashMap<String, String> header = new HashMap<>();
+    public ArrayList<MyPair> getHeaders() {
+        ArrayList<MyPair> header = new ArrayList<>();
         for (IItem iItem : adapter.getAdapterItems()) {
             RequestSettingListKVItem item;
             if (iItem instanceof RequestSettingListKVItem && (item = (RequestSettingListKVItem)
@@ -257,15 +259,15 @@ public class MainFragment extends Fragment {
                 String key;
                 if ((key = item.getKey()) != null && !key.isEmpty()) {
                     String value = item.getValue();
-                    header.put(key, value == null ? "" : value);
+                    header.add(new MyPair(key, value == null ? "" : value));
                 }
             }
         }
         return header;
     }
 
-    public HashMap<String, String> getParameters() {
-        HashMap<String, String> param = new HashMap<>();
+    public ArrayList<MyPair> getParameters() {
+        ArrayList<MyPair> param = new ArrayList<>();
         for (IItem iItem : adapter.getAdapterItems()) {
             RequestSettingListKVItem item;
             if (iItem instanceof RequestSettingListKVItem && (item = (RequestSettingListKVItem)
@@ -273,7 +275,7 @@ public class MainFragment extends Fragment {
                 String key;
                 if ((key = item.getKey()) != null && !key.isEmpty()) {
                     String value = item.getValue();
-                    param.put(key, value == null ? "" : value);
+                    param.add(new MyPair(key, value == null ? "" : value));
                 }
             }
         }
@@ -309,28 +311,27 @@ public class MainFragment extends Fragment {
             if (spinnerHttpSelection == -1 || spinnerMethodSelection == -1) return;
             ArrayList<IItem> dataSet = new ArrayList<>();
             try {
-                JSONObject header = new JSONObject(requestRecord.getHeaders());
-                JSONObject parameter = new JSONObject(requestRecord.getParameters());
+                List<MyPair> headers = jsonArrayToPairList(new JSONArray(requestRecord.getHeaders
+                        ()));
+                List<MyPair> parameters = jsonArrayToPairList(new JSONArray(requestRecord
+                        .getParameters()));
+
                 dataSet.add(new RequestSettingListStickTitle(RequestSettingType.header));
-                if (header.length() == 0)
+                if (headers.size() == 0)
                     dataSet.add(new RequestSettingListKVItem(RequestSettingType.header));
                 else {
-                    Iterator<String> keys = header.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next();
-                        dataSet.add(new RequestSettingListKVItem(RequestSettingType.header, key,
-                                header.getString(key)));
+                    for (MyPair myPair : headers) {
+                        dataSet.add(new RequestSettingListKVItem(RequestSettingType.header,
+                                myPair.getFirst(), myPair.getSecond()));
                     }
                 }
                 dataSet.add(new RequestSettingListStickTitle(RequestSettingType.parameter));
-                if (parameter.length() == 0)
+                if (parameters.size() == 0)
                     dataSet.add(new RequestSettingListKVItem(RequestSettingType.parameter));
                 else {
-                    Iterator<String> keys = parameter.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next();
+                    for (MyPair myPair : parameters) {
                         dataSet.add(new RequestSettingListKVItem(RequestSettingType.parameter,
-                                key, parameter.getString(key)));
+                                myPair.getFirst(), myPair.getSecond()));
                     }
                 }
             } catch (JSONException e) {

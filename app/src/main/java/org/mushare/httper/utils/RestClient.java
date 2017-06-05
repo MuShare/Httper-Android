@@ -1,71 +1,71 @@
 package org.mushare.httper.utils;
 
-import android.content.Context;
+import java.util.List;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
-import java.io.IOException;
-
-import cz.msebera.android.httpclient.Header;
+import static org.mushare.httper.utils.HttpUtils.phaseHeaders;
 
 /**
  * Created by dklap on 5/3/2017.
  */
 
 public class RestClient {
-    private static AsyncHttpClient client = new AsyncHttpClient();
+    private static OkHttpClient client = new OkHttpClient();
 
-    public static void get(Context context, String url, Header[] headers, RequestParams params,
-                           AsyncHttpResponseHandler responseHandler) {
-        client.get(context, url, headers, params, responseHandler);
+    public static Call get(String url, List<MyPair> headers, Callback callback) {
+        Request request = new Request.Builder().url(url).headers(phaseHeaders(headers)).get()
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
     }
 
-    public static void post(Context context, String url, Header[] headers, RequestParams params,
-                            AsyncHttpResponseHandler responseHandler) {
-        client.post(context, url, headers, params, null, responseHandler);
+    public static Call post(String url, List<MyPair> headers, String body, Callback callback) {
+        RequestBody requestBody = RequestBody.create(null, body);
+        Request request = new Request.Builder().url(url).headers(phaseHeaders(headers)).post
+                (requestBody).build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
     }
 
-    public static void head(Context context, String url, Header[] headers, RequestParams params,
-                            AsyncHttpResponseHandler responseHandler) {
-        client.head(context, url, headers, params, responseHandler);
+    public static Call head(String url, List<MyPair> headers, Callback callback) {
+        Request request = new Request.Builder().url(url).headers(phaseHeaders(headers)).head()
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
     }
 
-    public static void put(Context context, String url, Header[] headers, RequestParams params,
-                           AsyncHttpResponseHandler responseHandler) {
-        try {
-            client.put(context, url, headers, params.getEntity(responseHandler), null,
-                    responseHandler);
-        } catch (IOException e) {
-            if (responseHandler != null) {
-                responseHandler.sendFailureMessage(0, null, null, e);
-            } else {
-                e.printStackTrace();
-            }
-        }
+    public static Call put(String url, List<MyPair> headers, String body, Callback callback) {
+        RequestBody requestBody = RequestBody.create(null, body);
+        Request request = new Request.Builder().url(url).headers(phaseHeaders(headers)).put
+                (requestBody).build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
     }
 
-    public static void delete(Context context, String url, Header[] headers, RequestParams params,
-                              AsyncHttpResponseHandler responseHandler) {
-        client.delete(context, url, headers, params, responseHandler);
+    public static Call delete(String url, List<MyPair> headers, String body, Callback callback) {
+        Request request = new Request.Builder().url(url).headers(phaseHeaders(headers)).delete
+                (body == null ? null : RequestBody.create(null, body)).build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
     }
 
-    public static void patch(Context context, String url, Header[] headers, RequestParams params,
-                             AsyncHttpResponseHandler responseHandler) {
-        try {
-            client.patch(context, url, headers, params.getEntity(responseHandler), null,
-                    responseHandler);
-        } catch (IOException e) {
-            if (responseHandler != null) {
-                responseHandler.sendFailureMessage(0, null, null, e);
-            } else {
-                e.printStackTrace();
-            }
-        }
+    public static Call patch(String url, List<MyPair> headers, String body, Callback callback) {
+        RequestBody requestBody = RequestBody.create(null, body);
+        Request request = new Request.Builder().url(url).headers(phaseHeaders(headers)).patch
+                (requestBody).build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
     }
 
-    public static void cancel(Context context) {
-        client.cancelRequests(context, true);
-    }
 }

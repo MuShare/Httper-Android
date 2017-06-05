@@ -21,7 +21,7 @@ public class ResultRawFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_raw_result, container, false);
         ListView listView = (ListView) view.findViewById(R.id.listView);
         if (ResultActivity.responseBody != null) {
-            String[] texts = new String(ResultActivity.responseBody).split("\n");
+            String[] texts = ResultActivity.responseBody.split("\n");
             listView.setAdapter(new ArrayAdapter<>(getContext(), R
                     .layout.list_result_textview, texts));
         }

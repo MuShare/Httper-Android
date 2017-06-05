@@ -45,17 +45,17 @@ public class ResultPrettyFragment extends Fragment {
                 public void run() {
 
                     if (texts == null) {
-                        String text = new String(ResultActivity.responseBody);
                         try {
-                            MyJSONObject jsonObject = new MyJSONObject(text);
+                            MyJSONObject jsonObject = new MyJSONObject(ResultActivity.responseBody);
                             texts = jsonObject.getCharSequences(2);
                         } catch (JSONException e) {
                             try {
-                                MyJSONArray jsonArray = new MyJSONArray(text);
+                                MyJSONArray jsonArray = new MyJSONArray(ResultActivity
+                                        .responseBody);
                                 texts = jsonArray.getCharSequences(2);
                             } catch (JSONException e1) {
                                 texts = new ArrayList<>();
-                                texts.addAll(Arrays.asList(text.split("\n")));
+                                texts.addAll(Arrays.asList(ResultActivity.responseBody.split("\n")));
                             }
                         }
                     }

@@ -4,6 +4,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
@@ -15,34 +18,29 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
+import org.mushare.httper.utils.HttpUtils;
+import org.mushare.httper.utils.MyPair;
 import org.mushare.httper.utils.RestClient;
 import org.mushare.httper.view.MyTouchableLinearLayout;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.message.BasicHeader;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 
 /**
@@ -50,13 +48,17 @@ import cz.msebera.android.httpclient.message.BasicHeader;
  */
 
 public class ResultActivity extends AppCompatActivity {
-    static byte[] responseBody;
+    static final int MSG_DONE = 0;
+    static final int MSG_Fail = 1;
+    static String responseBody;
     final int DIALOG_ERROR_CONNECT = 0;
-
-    RequestParams params;
-    Header[] headers;
+    ArrayList<MyPair> params;
+    ArrayList<MyPair> headers;
     String method;
     String url;
+
+    Call call;
+    MyHandler myHandler = new MyHandler(this);
 
     File cacheFile;
     boolean refreshing;
@@ -108,15 +110,10 @@ public class ResultActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         url = intent.getStringExtra("http") + intent.getStringExtra("url");
+        params = (ArrayList<MyPair>) intent.getSerializableExtra("parameter");
+        url = HttpUtils.combineUrl(url, params);
         textViewURL.setText(url);
-        params = new RequestParams((HashMap) intent.getSerializableExtra("parameter"));
-        HashMap<String, String> headerMap = (HashMap) intent.getSerializableExtra("header");
-        List<Header> headerList = new ArrayList<>();
-        Set<String> keys = headerMap.keySet();
-        for (String key : keys) {
-            headerList.add(new BasicHeader(key, headerMap.get(key)));
-        }
-        headers = headerList.toArray(new Header[headerList.size()]);
+        headers = (ArrayList<MyPair>) intent.getSerializableExtra("header");
         method = intent.getStringExtra("method");
 
         cacheFile = new File(getCacheDir(), "response_cache");
@@ -125,11 +122,16 @@ public class ResultActivity extends AppCompatActivity {
             cacheFile.delete();
             refresh();
         } else if (cacheFile.exists()) {
-            int size = (int) cacheFile.length();
-            responseBody = new byte[size];
             try {
-                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(cacheFile));
-                buf.read(responseBody, 0, responseBody.length);
+                BufferedReader buf = new BufferedReader(new InputStreamReader(new FileInputStream
+                        (cacheFile)));
+                String line = buf.readLine();
+                StringBuilder sb = new StringBuilder();
+                while (line != null) {
+                    sb.append(line).append("\n");
+                    line = buf.readLine();
+                }
+                responseBody = sb.toString();
                 buf.close();
             } catch (Exception ignored) {
             }
@@ -164,36 +166,57 @@ public class ResultActivity extends AppCompatActivity {
 
     private void refresh() {
         refreshing = true;
-        RestClient.cancel(this);
+        if (call != null) call.cancel();
         refreshView.setVisibility(View.VISIBLE);
         viewPager.setVisibility(View.GONE);
         toolbar.setAlpha(0.4f);
         toolbar.touchable(false);
         switch (method) {
             case "GET":
-                RestClient.get(this, url, headers, params, new MyAsyncHttpResponseHandler());
+                call = RestClient.get(url, headers, new MyCallback());
                 break;
             case "POST":
-                RestClient.post(this, url, headers, params, new MyAsyncHttpResponseHandler());
+                call = RestClient.post(url, headers, null, new MyCallback());
                 break;
             case "HEAD":
-                RestClient.head(this, url, headers, params, new MyAsyncHttpResponseHandler());
+                call = RestClient.head(url, headers, new MyCallback());
                 break;
             case "PUT":
-                RestClient.put(this, url, headers, params, new MyAsyncHttpResponseHandler());
+                call = RestClient.put(url, headers, null, new MyCallback());
                 break;
             case "DELETE":
-                RestClient.delete(this, url, headers, params, new MyAsyncHttpResponseHandler());
+                call = RestClient.delete(url, headers, null, new MyCallback());
                 break;
             case "PATCH":
-                RestClient.patch(this, url, headers, params, new MyAsyncHttpResponseHandler());
+                call = RestClient.patch(url, headers, null, new MyCallback());
                 break;
         }
     }
 
+    void refreshFinish() {
+        MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+        textViewStatusCode.setText(String.valueOf(statusCode));
+        textViewHeader.setText(responseHeaders);
+        refreshView.setVisibility(View.GONE);
+        viewPager.setVisibility(View.VISIBLE);
+        toolbar.setAlpha(1f);
+        toolbar.touchable(true);
+    }
+
+    void refreshFail(String message) {
+        Bundle bundle = new Bundle();
+        bundle.putString("errorMessage", message);
+        showDialog(DIALOG_ERROR_CONNECT, bundle);
+        refreshView.setVisibility(View.GONE);
+        viewPager.setVisibility(View.VISIBLE);
+        toolbar.setAlpha(1f);
+        toolbar.touchable(true);
+    }
+
     @Override
     protected void onDestroy() {
-        RestClient.cancel(this);
+        if (call != null) call.cancel();
         responseBody = null;
         super.onDestroy();
     }
@@ -238,28 +261,51 @@ public class ResultActivity extends AppCompatActivity {
 //        return out;
 //    }
 
-    private CharSequence headersToCharSequence(Header[] headers) {
-        if (headers == null) return null;
-        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-        for (Header header : headers) {
-            spannableStringBuilder.append(header.getName());
-            spannableStringBuilder.append(": ");
-            Spannable value = new SpannableString(header.getValue());
-            value.setSpan(new ForegroundColorSpan(getResources().getColor(R.color
-                    .colorTextSecondary)), 0, value.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannableStringBuilder.append(value);
-            spannableStringBuilder.append("\n");
-        }
-        spannableStringBuilder.delete(spannableStringBuilder.length() - 1, spannableStringBuilder
-                .length());
-        return spannableStringBuilder;
-    }
+//    private CharSequence headersToCharSequence(Header[] headers) {
+//        if (headers == null) return null;
+//        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+//        for (Header header : headers) {
+//            spannableStringBuilder.append(header.getName());
+//            spannableStringBuilder.append(": ");
+//            Spannable value = new SpannableString(header.getValue());
+//            value.setSpan(new ForegroundColorSpan(getResources().getColor(R.color
+//                    .colorTextSecondary)), 0, value.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            spannableStringBuilder.append(value);
+//            spannableStringBuilder.append("\n");
+//        }
+//        spannableStringBuilder.delete(spannableStringBuilder.length() - 1, spannableStringBuilder
+//                .length());
+//        return spannableStringBuilder;
+//    }
 
     @Override
     public void onBackPressed() {
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         else super.onBackPressed();
+    }
+
+    private static class MyHandler extends Handler {
+        private final WeakReference<ResultActivity> mFragment;
+
+        MyHandler(ResultActivity fragment) {
+            mFragment = new WeakReference<>(fragment);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == MSG_DONE) {
+                ResultActivity fragment = mFragment.get();
+                if (fragment != null) {
+                    fragment.refreshFinish();
+                }
+            } else if (msg.what == MSG_Fail) {
+                ResultActivity fragment = mFragment.get();
+                if (fragment != null) {
+                    fragment.refreshFail(msg.getData().getString("error"));
+                }
+            }
+        }
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
@@ -292,65 +338,36 @@ public class ResultActivity extends AppCompatActivity {
         }
     }
 
-    private class MyAsyncHttpResponseHandler extends AsyncHttpResponseHandler {
+    private class MyCallback implements Callback {
 
         @Override
-        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-            ResultActivity.responseBody = responseBody;
-            ResultActivity.this.statusCode = statusCode;
-            responseHeaders = headersToCharSequence(headers);
-            if (responseBody != null) {
-                try {
-                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
-                            (cacheFile));
-                    bos.write(responseBody);
-                    bos.flush();
-                    bos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
-            viewPager.setAdapter(pagerAdapter);
-            textViewStatusCode.setText(String.valueOf(statusCode));
-            textViewHeader.setText(responseHeaders);
-            refreshView.setVisibility(View.GONE);
-            viewPager.setVisibility(View.VISIBLE);
-            toolbar.setAlpha(1f);
-            toolbar.touchable(true);
+        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            if (call.isCanceled()) return;
             refreshing = false;
+            Message message = new Message();
+            message.what = MSG_Fail;
+            Bundle bundle = new Bundle();
+            bundle.putString("error", e.getMessage());
+            message.setData(bundle);
+            myHandler.sendMessage(message);
         }
 
         @Override
-        public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
-                              Throwable error) {
-            ResultActivity.responseBody = responseBody;
-            if (responseBody != null) {
-                ResultActivity.this.statusCode = statusCode;
-                responseHeaders = headersToCharSequence(headers);
-                try {
-                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
-                            (cacheFile));
-                    bos.write(responseBody);
-                    bos.flush();
-                    bos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
-                viewPager.setAdapter(pagerAdapter);
-                textViewStatusCode.setText(String.valueOf(statusCode));
-                textViewHeader.setText(responseHeaders);
-            } else {
-                Bundle bundle = new Bundle();
-                bundle.putString("errorMessage", error.getMessage());
-                showDialog(DIALOG_ERROR_CONNECT, bundle);
+        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            ResultActivity.responseBody = response.body().string();
+            ResultActivity.this.statusCode = response.code();
+            responseHeaders = response.headers().toString();
+            try {
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
+                        (cacheFile));
+                bos.write(responseBody.getBytes());
+                bos.flush();
+                bos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            refreshView.setVisibility(View.GONE);
-            viewPager.setVisibility(View.VISIBLE);
-            toolbar.setAlpha(1f);
-            toolbar.touchable(true);
             refreshing = false;
+            myHandler.sendEmptyMessage(MSG_DONE);
         }
     }
 }
