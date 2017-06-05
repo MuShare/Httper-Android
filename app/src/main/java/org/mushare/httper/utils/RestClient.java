@@ -7,6 +7,7 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.internal.Util;
 
 import static org.mushare.httper.utils.HttpUtils.phaseHeaders;
 
@@ -26,9 +27,8 @@ public class RestClient {
     }
 
     public static Call post(String url, List<MyPair> headers, String body, Callback callback) {
-        RequestBody requestBody = RequestBody.create(null, body);
         Request request = new Request.Builder().url(url).headers(phaseHeaders(headers)).post
-                (requestBody).build();
+                (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
         Call call = client.newCall(request);
         call.enqueue(callback);
         return call;
@@ -43,9 +43,8 @@ public class RestClient {
     }
 
     public static Call put(String url, List<MyPair> headers, String body, Callback callback) {
-        RequestBody requestBody = RequestBody.create(null, body);
         Request request = new Request.Builder().url(url).headers(phaseHeaders(headers)).put
-                (requestBody).build();
+                (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
         Call call = client.newCall(request);
         call.enqueue(callback);
         return call;
@@ -60,9 +59,8 @@ public class RestClient {
     }
 
     public static Call patch(String url, List<MyPair> headers, String body, Callback callback) {
-        RequestBody requestBody = RequestBody.create(null, body);
         Request request = new Request.Builder().url(url).headers(phaseHeaders(headers)).patch
-                (requestBody).build();
+                (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
         Call call = client.newCall(request);
         call.enqueue(callback);
         return call;
