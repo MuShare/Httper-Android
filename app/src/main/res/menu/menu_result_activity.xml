@@ -4,5 +4,5 @@
     <item
         android:icon="@drawable/ic_action_info_outline"
         android:title="@string/result_view_response_info"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 </menu>

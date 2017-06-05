@@ -5,5 +5,5 @@
         android:id="@+id/menuClearHistory"
         android:icon="@drawable/ic_action_delete_forever"
         android:title="@string/history_view_clear"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 </menu>

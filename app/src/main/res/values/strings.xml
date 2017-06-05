@@ -12,6 +12,8 @@
     <string name="main_view_add">Add</string>
     <string name="main_view_remove">Remove</string>
     <string name="main_view_history">History</string>
+    <string name="main_view_clear">Clear all</string>
+    <string name="main_view_about">About this app</string>
 
     <string name="result_view_pretty">Pretty</string>
     <string name="result_view_raw">Raw</string>
@@ -27,11 +29,16 @@
     <string name="response_headers">Response Headers</string>
 
     <string name="error">Cannot access to the URL, check your connection and service provider!\n\nError Message:\n%s</string>
-    <string name="history_warn">Do you really want to clear the entire history?</string>
+    <string name="clear_history_warn">Do you really want to clear the entire history?</string>
+    <string name="clear_request_warn">Are you sure to clear and reset request?</string>
     <string name="dialog_error">Error</string>
     <string name="dialog_warn">Warning</string>
     <string name="dialog_ok">OK</string>
+    <string name="dialog_yes">Yes</string>
     <string name="dialog_cancel">Cancel</string>
+
+    <string name="description">Httper is a REST API test tool running on your iOS devices. It helps developers to test their REST API anywhere and anytime without desktops. Developers can submit a HTTP request with several headers, parameters and row request body by 6 different HTTP methods including GET, POST, HEAD, PUT, DELETE and PATCH. HTTP response can be shown as three styles including pretty, row and preview. Response status code and headers are also supported in Httper.</string>
+    <string name="copy_right">Copyrights © %1$d</string>
 
     <string-array name="methods_array">
         <item>GET</item>

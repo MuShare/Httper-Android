@@ -105,6 +105,13 @@ public class RequestHistoryActivity extends AppCompatActivity {
                 return true;
             }
         });
+        toolbar.setNavigationIcon(R.drawable.ic_action_arrow_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         if (itemAdapter.getAdapterItemCount() == 0)
             toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(false);
@@ -114,7 +121,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
     @Override
     protected Dialog onCreateDialog(int id) {
         return new AlertDialog.Builder(this).setTitle(R.string.dialog_warn).setMessage(R.string
-                .history_warn).setPositiveButton(R.string.dialog_ok, new DialogInterface
+                .clear_history_warn).setPositiveButton(R.string.dialog_yes, new DialogInterface
                 .OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

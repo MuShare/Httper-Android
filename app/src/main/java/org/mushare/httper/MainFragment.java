@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,8 +34,11 @@ import org.mushare.httper.utils.RequestSettingDataUtils;
 import org.mushare.httper.view.MyStickyHeader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import me.grantland.widget.AutofitHelper;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -65,6 +70,8 @@ public class MainFragment extends Fragment {
         spinnerMethod = (Spinner) view.findViewById(R.id.spinnerMethods);
         spinnerHttp = (Spinner) view.findViewById(R.id.spinnerHttp);
         editTextUrl = (EditText) view.findViewById(R.id.editTextUrl);
+        AutofitHelper.create(editTextUrl).setMinTextSize(TypedValue.COMPLEX_UNIT_SP, 14)
+                .setPrecision(0.1f);
         final Button buttonSend = (Button) view.findViewById(R.id.buttonSend);
 
         editTextUrl.addTextChangedListener(new TextWatcher() {
@@ -209,18 +216,36 @@ public class MainFragment extends Fragment {
             }
         });
 
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_main_fragment);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                startActivityForResult(new Intent(getContext(), RequestHistoryActivity.class),
-                        HISTORY_CODE);
-                return true;
+                if (item.getItemId() == R.id.menuHistory) {
+                    startActivityForResult(new Intent(getContext(), RequestHistoryActivity.class),
+                            HISTORY_CODE);
+                    return true;
+                } else if (item.getItemId() == R.id.menuClear) {
+                    DialogFragment newFragment = new ClearRequestDialogFragment();
+                    newFragment.setTargetFragment(MainFragment.this, 0);
+                    newFragment.show(getFragmentManager(), "dialog");
+                    return true;
+                }
+                return false;
             }
         });
-
         return view;
+    }
+
+    void clearAll() {
+        spinnerMethod.setSelection(0);
+        spinnerHttp.setSelection(0);
+        editTextUrl.setText(null);
+        adapter.set(Arrays.<IItem>asList(new RequestSettingListStickTitle
+                (RequestSettingType.header), new RequestSettingListKVItem
+                (RequestSettingType.header), new RequestSettingListStickTitle
+                (RequestSettingType.parameter), new RequestSettingListKVItem
+                (RequestSettingType.parameter)));
     }
 
     public HashMap<String, String> getHeaders() {

@@ -2,7 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menuClear"
+        android:icon="@drawable/ic_action_broom"
+        android:title="@string/main_view_clear"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menuHistory"
         android:icon="@drawable/ic_action_history"
         android:title="@string/main_view_history"
         app:showAsAction="ifRoom"/>
+    <!--<item-->
+    <!--android:id="@+id/menuAbout"-->
+    <!--android:title="@string/main_view_about"-->
+    <!--app:showAsAction="never"/>-->
 </menu>

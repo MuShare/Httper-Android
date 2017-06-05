@@ -14,7 +14,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -34,4 +34,5 @@ dependencies {
     compile 'com.mikepenz:fastadapter-commons:2.6.0@aar'
     compile 'com.mikepenz:fastadapter:2.6.0@aar'
     compile 'org.greenrobot:greendao:3.2.2'
+    compile 'me.grantland:autofittextview:0.2.1'
 }
