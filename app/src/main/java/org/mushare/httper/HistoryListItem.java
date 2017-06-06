@@ -29,6 +29,10 @@ public class HistoryListItem extends AbstractItem<HistoryListItem, HistoryListIt
         return id;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
     @Override
     public int getType() {
         return R.id.history_list_item;

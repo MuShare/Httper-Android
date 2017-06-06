@@ -21,6 +21,8 @@
     <string name="result_view_response_info">Response Information</string>
     <string name="result_view_refreshing">Wait a moment…</string>
 
+    <string name="history_view_search">Search</string>
+    <string name="history_view_search_url">Search URL…</string>
     <string name="history_view_clear">Clear all</string>
     <string name="history_view_empty">No history</string>
 

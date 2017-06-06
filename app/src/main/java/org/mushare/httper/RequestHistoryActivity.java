@@ -4,10 +4,12 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.MenuItem;
@@ -16,6 +18,7 @@ import android.view.View;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItem;
+import com.mikepenz.fastadapter.IItemAdapter;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 
 import org.json.JSONArray;
@@ -41,6 +44,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
     final int CLEAR_HISTORY_DIALOG_ID = 0;
     RequestRecordDao requestRecordDao;
     Toolbar toolbar;
+    MenuItem menuItemSearch;
     View emptyView;
     private FastItemAdapter<IItem> itemAdapter;
 
@@ -105,17 +109,57 @@ public class RequestHistoryActivity extends AppCompatActivity {
                 return false;
             }
         });
-
+        itemAdapter.getItemFilter().withFilterPredicate(new IItemAdapter.Predicate<IItem>() {
+            @Override
+            public boolean filter(IItem item, CharSequence constraint) {
+                return !(item instanceof HistoryListItem && ((HistoryListItem) item).getUrl()
+                        .contains(constraint));
+            }
+        });
 
         emptyView = findViewById(R.id.emptyMessage);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_history_activity);
+        menuItemSearch = toolbar.getMenu().findItem(R.id.menuSearchHistory);
+        MenuItemCompat.setOnActionExpandListener(menuItemSearch, new MenuItemCompat
+                .OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(false);
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(true);
+                return true;
+            }
+        });
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItemSearch);
+        searchView.setQueryHint(getString(R.string.history_view_search_url));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                itemAdapter.filter(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                itemAdapter.filter(newText);
+                return true;
+            }
+        });
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                showDialog(CLEAR_HISTORY_DIALOG_ID);
-                return true;
+                if (item.getItemId() == R.id.menuClearHistory) {
+                    showDialog(CLEAR_HISTORY_DIALOG_ID);
+                    return true;
+                }
+                return false;
             }
         });
         toolbar.setNavigationIcon(R.drawable.ic_action_arrow_back);
@@ -162,5 +206,12 @@ public class RequestHistoryActivity extends AppCompatActivity {
         ArrayList<IItem> dataSet = (ArrayList<IItem>) savedInstanceState.getSerializable("dataSet");
         itemAdapter.set(dataSet);
         itemAdapter.withSavedInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (menuItemSearch != null && menuItemSearch.isActionViewExpanded())
+            menuItemSearch.collapseActionView();
+        else super.onBackPressed();
     }
 }
