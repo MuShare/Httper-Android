@@ -3,6 +3,7 @@ package org.mushare.httper.utils;
 import com.mikepenz.fastadapter.IItem;
 
 import org.mushare.httper.RequestSettingListKVItem;
+import org.mushare.httper.RequestSettingListStickTitle;
 import org.mushare.httper.RequestSettingType;
 
 import java.util.List;
@@ -32,5 +33,14 @@ public class RequestSettingDataUtils {
                 return i;
         }
         return -1;
+    }
+
+    public static RequestSettingType findTitleTypeBeforeIndex(List<IItem> data, int index) {
+        for (int i = index - 1; i >= 0; i--) {
+            IItem iItem = data.get(i);
+            if (iItem instanceof RequestSettingListStickTitle)
+                return ((RequestSettingListStickTitle) iItem).getRequestSettingType();
+        }
+        return null;
     }
 }

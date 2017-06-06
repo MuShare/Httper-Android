@@ -4,5 +4,6 @@
     <item name="history_list_title" type="id"/>
     <item name="request_setting_list_header" type="id"/>
     <item name="request_setting_list_param" type="id"/>
+    <item name="request_setting_list_body" type="id"/>
     <item name="request_setting_list_title" type="id"/>
 </resources>

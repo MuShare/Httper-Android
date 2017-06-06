@@ -21,11 +21,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.mushare.httper.dialog.ClearRequestDialog;
+import org.mushare.httper.dialog.RequestRawBodyDialog;
 import org.mushare.httper.entity.DaoSession;
 import org.mushare.httper.entity.RequestRecord;
 import org.mushare.httper.entity.RequestRecordDao;
@@ -51,11 +55,13 @@ import static org.mushare.httper.utils.HttpUtils.pairListToJSONArray;
 public class MainFragment extends Fragment {
     final int HISTORY_CODE = 0;
     FastItemAdapter<IItem> adapter;
+    MyStickyHeader stickyHeader;
     RequestRecordDao requestRecordDao;
 
     Spinner spinnerMethod;
     Spinner spinnerHttp;
     EditText editTextUrl;
+    String body;
 
     @Override
     public void onAttach(Context context) {
@@ -125,6 +131,8 @@ public class MainFragment extends Fragment {
             }
         });
 
+        stickyHeader = (MyStickyHeader) view.findViewById(R.id.stickyHeader);
+
         //create our adapters
         adapter = new FastItemAdapter<>();
 
@@ -146,17 +154,34 @@ public class MainFragment extends Fragment {
             adapter.add(new RequestSettingListStickTitle(RequestSettingType.header), new
                     RequestSettingListKVItem(RequestSettingType.header), new
                     RequestSettingListStickTitle(RequestSettingType.parameter), new
-                    RequestSettingListKVItem(RequestSettingType.parameter));
-        } else restoreAdapter(savedInstanceState);
+                    RequestSettingListKVItem(RequestSettingType.parameter), new
+                    RequestSettingListStickTitle(RequestSettingType.body), new
+                    RequestSettingListBodyItem());
+        } else {
+            body = savedInstanceState.getString("body");
+            restoreAdapter(savedInstanceState);
+        }
 
         adapter.withEventHook(new RequestSettingListStickTitle.AddEvent()).withEventHook(new
                 RequestSettingListKVItem.RemoveEvent());
+        adapter.withOnClickListener(new FastAdapter.OnClickListener<IItem>() {
+            @Override
+            public boolean onClick(View v, IAdapter<IItem> adapter, IItem item, int position) {
+                if (item instanceof RequestSettingListBodyItem) {
+                    DialogFragment newFragment = new RequestRawBodyDialog();
+                    newFragment.setTargetFragment(MainFragment.this, 0);
+                    newFragment.show(getFragmentManager(), "dialog");
+                    return true;
+                }
+                return false;
+            }
+        });
 
-        final MyStickyHeader stickyHeader = (MyStickyHeader) view.findViewById(R.id.stickyHeader);
         stickyHeader.setButtonOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RequestSettingType type = stickyHeader.getType();
+                if (type == RequestSettingType.body) return;
                 adapter.add(RequestSettingDataUtils.lastIndexOf(adapter.getAdapterItems(), type)
                         + 1, new RequestSettingListKVItem(type));
             }
@@ -173,18 +198,13 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                int index = RequestSettingDataUtils.lastIndexOf(adapter.getAdapterItems(),
-                        RequestSettingType.header) + 1;
                 int position = ((LinearLayoutManager) recyclerView.getLayoutManager())
                         .findFirstCompletelyVisibleItemPosition();
-                if (position > index) {
-                    stickyHeader.setType(RequestSettingType.parameter);
-                    stickyHeader.setTranslationY(0);
-                } else if (position < index) {
-                    stickyHeader.setType(RequestSettingType.header);
-                    stickyHeader.setTranslationY(0);
-                } else {
-                    stickyHeader.setType(RequestSettingType.header);
+                if (position <= 0) return;
+                stickyHeader.setType(RequestSettingDataUtils.findTitleTypeBeforeIndex(adapter
+                        .getAdapterItems(), position));
+                if (adapter.getAdapterItems().get(position) instanceof
+                        RequestSettingListStickTitle) {
                     View title = recyclerView.getLayoutManager().findViewByPosition(position);
                     float distance = title.getY() - stickyHeader.getY();
                     int stickyHeaderHeight = stickyHeader.getHeight();
@@ -192,7 +212,7 @@ public class MainFragment extends Fragment {
                     if (distance < stickyHeaderHeight || stickyHeaderTranslationY < 0)
                         stickyHeader.setTranslationY(Math.min(stickyHeaderTranslationY + distance -
                                 stickyHeaderHeight, 0));
-                }
+                } else stickyHeader.setTranslationY(0);
             }
         });
 
@@ -206,6 +226,7 @@ public class MainFragment extends Fragment {
                 requestRecord.setUrl(editTextUrl.getText().toString());
                 requestRecord.setHeaders(pairListToJSONArray(getHeaders()).toString());
                 requestRecord.setParameters(pairListToJSONArray(getParameters()).toString());
+                requestRecord.setBody(body);
                 requestRecordDao.insert(requestRecord);
 
                 Intent intent = new Intent(getContext(), ResultActivity.class);
@@ -214,6 +235,7 @@ public class MainFragment extends Fragment {
                 intent.putExtra("url", editTextUrl.getText().toString());
                 intent.putExtra("header", getHeaders());
                 intent.putExtra("parameter", getParameters());
+                intent.putExtra("body", body);
                 startActivity(intent);
             }
         });
@@ -228,7 +250,7 @@ public class MainFragment extends Fragment {
                             HISTORY_CODE);
                     return true;
                 } else if (item.getItemId() == R.id.menuClear) {
-                    DialogFragment newFragment = new ClearRequestDialogFragment();
+                    DialogFragment newFragment = new ClearRequestDialog();
                     newFragment.setTargetFragment(MainFragment.this, 0);
                     newFragment.show(getFragmentManager(), "dialog");
                     return true;
@@ -239,7 +261,7 @@ public class MainFragment extends Fragment {
         return view;
     }
 
-    void clearAll() {
+    public void clearAll() {
         spinnerMethod.setSelection(0);
         spinnerHttp.setSelection(0);
         editTextUrl.setText(null);
@@ -247,7 +269,17 @@ public class MainFragment extends Fragment {
                 (RequestSettingType.header), new RequestSettingListKVItem
                 (RequestSettingType.header), new RequestSettingListStickTitle
                 (RequestSettingType.parameter), new RequestSettingListKVItem
-                (RequestSettingType.parameter)));
+                (RequestSettingType.parameter), new RequestSettingListStickTitle
+                (RequestSettingType.body), new RequestSettingListBodyItem()));
+        body = null;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public ArrayList<MyPair> getHeaders() {
@@ -285,17 +317,21 @@ public class MainFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString("body", body);
         saveAdapter(outState);
     }
 
     private void saveAdapter(Bundle outState) {
         outState = adapter.saveInstanceState(outState);
         outState.putSerializable("dataSet", new ArrayList<>(adapter.getAdapterItems()));
+        outState.putSerializable("stickyHeader", stickyHeader.getType());
     }
 
     private void restoreAdapter(Bundle savedInstanceState) {
         adapter.set((ArrayList<IItem>) savedInstanceState.getSerializable("dataSet"));
         adapter.withSavedInstanceState(savedInstanceState);
+        stickyHeader.setType((RequestSettingType) savedInstanceState.getSerializable
+                ("stickyHeader"));
     }
 
     @Override
@@ -311,13 +347,11 @@ public class MainFragment extends Fragment {
             if (spinnerHttpSelection == -1 || spinnerMethodSelection == -1) return;
             ArrayList<IItem> dataSet = new ArrayList<>();
             try {
-                List<MyPair> headers = jsonArrayToPairList(new JSONArray(requestRecord.getHeaders
-                        ()));
-                List<MyPair> parameters = jsonArrayToPairList(new JSONArray(requestRecord
-                        .getParameters()));
-
                 dataSet.add(new RequestSettingListStickTitle(RequestSettingType.header));
-                if (headers.size() == 0)
+                String headerString = requestRecord.getHeaders();
+                List<MyPair> headers;
+                if (headerString == null || (headers = jsonArrayToPairList(new JSONArray
+                        (headerString))).size() == 0)
                     dataSet.add(new RequestSettingListKVItem(RequestSettingType.header));
                 else {
                     for (MyPair myPair : headers) {
@@ -326,7 +360,10 @@ public class MainFragment extends Fragment {
                     }
                 }
                 dataSet.add(new RequestSettingListStickTitle(RequestSettingType.parameter));
-                if (parameters.size() == 0)
+                String paramString = requestRecord.getParameters();
+                List<MyPair> parameters;
+                if (paramString == null || (parameters = jsonArrayToPairList(new JSONArray
+                        (paramString))).size() == 0)
                     dataSet.add(new RequestSettingListKVItem(RequestSettingType.parameter));
                 else {
                     for (MyPair myPair : parameters) {
@@ -334,6 +371,8 @@ public class MainFragment extends Fragment {
                                 myPair.getFirst(), myPair.getSecond()));
                     }
                 }
+                dataSet.add(new RequestSettingListStickTitle(RequestSettingType.body));
+                dataSet.add(new RequestSettingListBodyItem());
             } catch (JSONException e) {
                 return;
             }
@@ -341,6 +380,7 @@ public class MainFragment extends Fragment {
             spinnerHttp.setSelection(spinnerHttpSelection);
             editTextUrl.setText(requestRecord.getUrl());
             adapter.set(dataSet);
+            body = requestRecord.getBody();
         } else super.onActivityResult(requestCode, resultCode, data);
     }
 

@@ -15,7 +15,7 @@
         android:layout_marginStart="8dp"
         android:layout_weight="1"
         android:completionThreshold="1"
-        android:dropDownWidth="192dp"
+        android:dropDownWidth="192sp"
         android:hint="@string/main_view_key"
         android:imeOptions="actionNext|flagNoExtractUi"
         android:inputType="textNoSuggestions"/>

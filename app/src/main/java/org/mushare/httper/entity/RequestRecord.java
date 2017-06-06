@@ -32,17 +32,17 @@ public class RequestRecord {
 
     private String headers;
     private String parameters;
-
+    private String body;
 
     public RequestRecord(Long id) {
         this.id = id;
     }
 
 
-    @Generated(hash = 578849419)
+    @Generated(hash = 1622503303)
     public RequestRecord(Long id, @NotNull Long createAt, @NotNull String method,
                          @NotNull String http, @NotNull String url, String headers,
-                         String parameters) {
+                         String parameters, String body) {
         this.id = id;
         this.createAt = createAt;
         this.method = method;
@@ -50,6 +50,7 @@ public class RequestRecord {
         this.url = url;
         this.headers = headers;
         this.parameters = parameters;
+        this.body = body;
     }
 
 
@@ -98,14 +99,6 @@ public class RequestRecord {
         this.parameters = parameters;
     }
 
-    public Long getRid() {
-        return this.id;
-    }
-
-    public void setRid(Long id) {
-        this.id = id;
-    }
-
     public String getHttp() {
         return this.http;
     }
@@ -122,5 +115,15 @@ public class RequestRecord {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+
+    public String getBody() {
+        return this.body;
+    }
+
+
+    public void setBody(String body) {
+        this.body = body;
     }
 }

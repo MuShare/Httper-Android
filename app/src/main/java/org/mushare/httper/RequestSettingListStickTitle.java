@@ -54,9 +54,15 @@ public class RequestSettingListStickTitle extends AbstractItem<RequestSettingLis
         switch (requestSettingType) {
             case header:
                 holder.textViewTitle.setText(R.string.main_view_headers);
+                holder.imageButtonAdd.setVisibility(View.VISIBLE);
                 break;
             case parameter:
                 holder.textViewTitle.setText(R.string.main_view_params);
+                holder.imageButtonAdd.setVisibility(View.VISIBLE);
+                break;
+            case body:
+                holder.textViewTitle.setText(R.string.main_view_body);
+                holder.imageButtonAdd.setVisibility(View.INVISIBLE);
                 break;
         }
     }
@@ -80,6 +86,7 @@ public class RequestSettingListStickTitle extends AbstractItem<RequestSettingLis
                     FastItemAdapter) {
                 RequestSettingType type = ((RequestSettingListStickTitle) item)
                         .getRequestSettingType();
+                if (type == RequestSettingType.body) return;
                 FastItemAdapter<IItem> fastItemAdapter = (FastItemAdapter<IItem>) fastAdapter;
                 fastItemAdapter.add(RequestSettingDataUtils.lastIndexOf(fastItemAdapter
                         .getAdapterItems(), type) + 1, new RequestSettingListKVItem(type));

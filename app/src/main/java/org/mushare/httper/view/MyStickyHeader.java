@@ -18,7 +18,7 @@ public class MyStickyHeader extends ConstraintLayout {
     TextView title;
     ImageButton button;
 
-    RequestSettingType type;
+    RequestSettingType type = RequestSettingType.header;
 
     public MyStickyHeader(Context context) {
         super(context);
@@ -50,14 +50,20 @@ public class MyStickyHeader extends ConstraintLayout {
     }
 
     public void setType(RequestSettingType type) {
-        if (this.type == type) return;
+        if (this.type == type || type == null) return;
         this.type = type;
         switch (type) {
             case header:
                 title.setText(R.string.main_view_headers);
+                button.setVisibility(VISIBLE);
                 break;
             case parameter:
                 title.setText(R.string.main_view_params);
+                button.setVisibility(VISIBLE);
+                break;
+            case body:
+                title.setText(R.string.main_view_body);
+                button.setVisibility(INVISIBLE);
                 break;
         }
     }

@@ -7,6 +7,9 @@
     <string name="main_view_send_request">Send Request</string>
     <string name="main_view_headers">Headers</string>
     <string name="main_view_params">Parameters</string>
+    <string name="main_view_body">Body</string>
+    <string name="main_view_body_raw">Raw Request Body (TEXT)</string>
+    <string name="main_view_body_raw_dialog_hint">Input request body here</string>
     <string name="main_view_key">Key</string>
     <string name="main_view_value">Value</string>
     <string name="main_view_add">Add</string>

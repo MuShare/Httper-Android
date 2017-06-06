@@ -1,4 +1,4 @@
-package org.mushare.httper;
+package org.mushare.httper.dialog;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -7,11 +7,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
+import org.mushare.httper.MainFragment;
+import org.mushare.httper.R;
+
 /**
  * Created by dklap on 6/5/2017.
  */
 
-public class ClearRequestDialogFragment extends DialogFragment {
+public class ClearRequestDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

@@ -5,5 +5,5 @@ package org.mushare.httper;
  */
 
 public enum RequestSettingType {
-    header, parameter
+    header, parameter, body
 }

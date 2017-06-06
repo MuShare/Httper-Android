@@ -56,6 +56,7 @@ public class ResultActivity extends AppCompatActivity {
     ArrayList<MyPair> headers;
     String method;
     String url;
+    String body;
 
     Call call;
     MyHandler myHandler = new MyHandler(this);
@@ -115,6 +116,7 @@ public class ResultActivity extends AppCompatActivity {
         textViewURL.setText(url);
         headers = (ArrayList<MyPair>) intent.getSerializableExtra("header");
         method = intent.getStringExtra("method");
+        body = intent.getStringExtra("body");
 
         cacheFile = new File(getCacheDir(), "response_cache");
         if (savedInstanceState == null || (refreshing = savedInstanceState.getBoolean
@@ -176,19 +178,19 @@ public class ResultActivity extends AppCompatActivity {
                 call = RestClient.get(url, headers, new MyCallback());
                 break;
             case "POST":
-                call = RestClient.post(url, headers, null, new MyCallback());
+                call = RestClient.post(url, headers, body, new MyCallback());
                 break;
             case "HEAD":
                 call = RestClient.head(url, headers, new MyCallback());
                 break;
             case "PUT":
-                call = RestClient.put(url, headers, null, new MyCallback());
+                call = RestClient.put(url, headers, body, new MyCallback());
                 break;
             case "DELETE":
-                call = RestClient.delete(url, headers, null, new MyCallback());
+                call = RestClient.delete(url, headers, body, new MyCallback());
                 break;
             case "PATCH":
-                call = RestClient.patch(url, headers, null, new MyCallback());
+                call = RestClient.patch(url, headers, body, new MyCallback());
                 break;
         }
     }
