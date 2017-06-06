@@ -36,11 +36,12 @@ public class RequestSettingDataUtils {
     }
 
     public static RequestSettingType findTitleTypeBeforeIndex(List<IItem> data, int index) {
+        if (index == 0) return RequestSettingType.header;
         for (int i = index - 1; i >= 0; i--) {
             IItem iItem = data.get(i);
             if (iItem instanceof RequestSettingListStickTitle)
                 return ((RequestSettingListStickTitle) iItem).getRequestSettingType();
         }
-        return null;
+        return RequestSettingType.header;
     }
 }

@@ -200,7 +200,7 @@ public class MainFragment extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 int position = ((LinearLayoutManager) recyclerView.getLayoutManager())
                         .findFirstCompletelyVisibleItemPosition();
-                if (position <= 0) return;
+                if (position < 0) return;
                 stickyHeader.setType(RequestSettingDataUtils.findTitleTypeBeforeIndex(adapter
                         .getAdapterItems(), position));
                 if (adapter.getAdapterItems().get(position) instanceof
@@ -328,10 +328,10 @@ public class MainFragment extends Fragment {
     }
 
     private void restoreAdapter(Bundle savedInstanceState) {
-        adapter.set((ArrayList<IItem>) savedInstanceState.getSerializable("dataSet"));
-        adapter.withSavedInstanceState(savedInstanceState);
         stickyHeader.setType((RequestSettingType) savedInstanceState.getSerializable
                 ("stickyHeader"));
+        adapter.set((ArrayList<IItem>) savedInstanceState.getSerializable("dataSet"));
+        adapter.withSavedInstanceState(savedInstanceState);
     }
 
     @Override
