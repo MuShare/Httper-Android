@@ -39,3 +39,6 @@ public static java.lang.String TABLENAME;
 -dontwarn okio.**
 -dontwarn javax.annotation.Nullable
 -dontwarn javax.annotation.ParametersAreNonnullByDefault
+
+# SearchView
+-keep class android.support.v7.widget.SearchView { *; }
