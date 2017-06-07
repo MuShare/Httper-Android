@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 /**
@@ -13,11 +14,13 @@ import android.widget.TextView;
  */
 
 public class AboutActivity extends AppCompatActivity {
+    ScrollView scrollView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-
+        scrollView = (ScrollView) findViewById(R.id.scrollViewAbout);
         findViewById(R.id.imageButtonLink).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,5 +71,14 @@ public class AboutActivity extends AppCompatActivity {
                 linearLayout.addView(item);
             }
         }
+        if (savedInstanceState != null) {
+            scrollView.scrollTo(0, savedInstanceState.getInt("scroll_position"));
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("scroll_position", scrollView.getScrollY());
     }
 }

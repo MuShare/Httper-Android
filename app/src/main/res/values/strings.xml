@@ -46,6 +46,9 @@
     <string name="about_view_copy_right">Copyright © 2017</string>
     <string name="about_view_us">MuShare Group</string>
     <string name="about_view_licenses">Licenses</string>
+    <string name="about_view_link">Visit our Homepage</string>
+    <string name="about_view_github">Fork on Github</string>
+    <string name="about_view_store">Rate on Play Store</string>
 
     <string-array name="methods_array">
         <item>GET</item>
