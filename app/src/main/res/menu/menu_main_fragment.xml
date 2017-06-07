@@ -11,8 +11,8 @@
         android:icon="@drawable/ic_action_history"
         android:title="@string/main_view_history"
         app:showAsAction="ifRoom"/>
-    <!--<item-->
-    <!--android:id="@+id/menuAbout"-->
-    <!--android:title="@string/main_view_about"-->
-    <!--app:showAsAction="never"/>-->
+    <item
+        android:id="@+id/menuAbout"
+        android:title="@string/main_view_about"
+        app:showAsAction="never"/>
 </menu>
