@@ -65,16 +65,21 @@
     <string-array name="headers_array">
         <item>Accept</item>
         <item>Accept-Charset</item>
+        <item>Accept-Datetime</item>
         <item>Accept-Encoding</item>
         <item>Accept-Language</item>
-        <item>Accept-Datetime</item>
+        <item>Access-Control-Request-Headers</item>
+        <item>Access-Control-Request-Method</item>
         <item>Authorization</item>
         <item>Cache-Control</item>
         <item>Connection</item>
         <item>Content-Length</item>
         <item>Content-MD5</item>
+        <item>Content-Transfer-Encoding</item>
         <item>Content-Type</item>
         <item>Cookie</item>
+        <item>Cookie 2</item>
+        <item>DNT</item>
         <item>Date</item>
         <item>Expect</item>
         <item>Forwarded</item>
@@ -85,16 +90,22 @@
         <item>If-None-Match</item>
         <item>If-Range</item>
         <item>If-Unmodified-Since</item>
+        <item>Keep-Alive</item>
         <item>Max-Forwards</item>
         <item>Origin</item>
         <item>Pragma</item>
         <item>Proxy-Authorization</item>
         <item>Range</item>
         <item>Referer</item>
-        <item>User-Agent</item>
+        <item>TE</item>
+        <item>Trailer</item>
+        <item>Transfer-Encoding</item>
         <item>Upgrade</item>
+        <item>User-Agent</item>
         <item>Via</item>
         <item>Warning</item>
+        <item>X-Do-Not-Track</item>
+        <item>X-Requested-With</item>
     </string-array>
     <string-array name="licenses">
         <item>OkHttp</item>

@@ -14,17 +14,22 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity
             android:name=".MainActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ResultActivity"/>
-        <activity android:name=".RequestHistoryActivity"/>
+        <activity
+            android:name=".ResultActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"/>
+        <activity
+            android:name=".RequestHistoryActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"/>
         <activity
             android:name=".AboutActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:label="@string/main_view_about"
             android:theme="@style/AppTheme"/>
     </application>

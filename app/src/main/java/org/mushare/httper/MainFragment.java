@@ -108,6 +108,21 @@ public class MainFragment extends Fragment {
         //configure our fastAdapter
         //as we provide id's for the items we want the hasStableIds enabled to speed up things
         adapter.setHasStableIds(true);
+        adapter.withEventHook(new RequestSettingListStickTitle.AddEvent()).withEventHook(new
+                RequestSettingListKVItem.RemoveEvent()).withEventHook(new
+                RequestSettingListKVItem.textChangeEvent());
+        adapter.withOnClickListener(new FastAdapter.OnClickListener<IItem>() {
+            @Override
+            public boolean onClick(View v, IAdapter<IItem> adapter, IItem item, int position) {
+                if (item instanceof RequestSettingListBodyItem) {
+                    DialogFragment newFragment = new RequestRawBodyDialog();
+                    newFragment.setTargetFragment(MainFragment.this, 0);
+                    newFragment.show(getFragmentManager(), "dialog");
+                    return true;
+                }
+                return false;
+            }
+        });
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         // use this setting to improve performance if you know that changes
@@ -130,21 +145,6 @@ public class MainFragment extends Fragment {
             body = savedInstanceState.getString("body");
             restoreAdapter(savedInstanceState);
         }
-
-        adapter.withEventHook(new RequestSettingListStickTitle.AddEvent()).withEventHook(new
-                RequestSettingListKVItem.RemoveEvent());
-        adapter.withOnClickListener(new FastAdapter.OnClickListener<IItem>() {
-            @Override
-            public boolean onClick(View v, IAdapter<IItem> adapter, IItem item, int position) {
-                if (item instanceof RequestSettingListBodyItem) {
-                    DialogFragment newFragment = new RequestRawBodyDialog();
-                    newFragment.setTargetFragment(MainFragment.this, 0);
-                    newFragment.show(getFragmentManager(), "dialog");
-                    return true;
-                }
-                return false;
-            }
-        });
 
         stickyHeader.setButtonOnClickListener(new View.OnClickListener() {
             @Override

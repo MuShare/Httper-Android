@@ -2,6 +2,7 @@ package org.mushare.httper;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,18 +10,20 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 import com.mikepenz.fastadapter.items.AbstractItem;
 import com.mikepenz.fastadapter.listeners.ClickEventHook;
+import com.mikepenz.fastadapter.listeners.CustomEventHook;
 
 import org.mushare.httper.utils.RequestSettingDataUtils;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,40 +35,6 @@ public class RequestSettingListKVItem extends AbstractItem<RequestSettingListKVI
     private String key;
     private String value;
     private RequestSettingType requestSettingType;
-
-    private transient TextWatcher keyWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            key = s.toString();
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
-
-    private transient TextWatcher valueWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            value = s.toString();
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
 
     RequestSettingListKVItem(RequestSettingType requestSettingType) {
         this.requestSettingType = requestSettingType;
@@ -124,21 +93,11 @@ public class RequestSettingListKVItem extends AbstractItem<RequestSettingListKVI
         super.bindView(holder, payloads);
         holder.textViewKey.setText(key);
         holder.textViewValue.setText(value);
-        holder.textViewKey.addTextChangedListener(keyWatcher);
-        holder.textViewValue.addTextChangedListener(valueWatcher);
     }
-
-    @Override
-    public void unbindView(MyViewHolder holder) {
-        super.unbindView(holder);
-        holder.textViewKey.removeTextChangedListener(keyWatcher);
-        holder.textViewValue.removeTextChangedListener(valueWatcher);
-    }
-
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         AutoCompleteTextView textViewKey;
-        TextView textViewValue;
+        EditText textViewValue;
         ImageButton imageButtonRemove;
 
         MyViewHolder(final View view, boolean isHttpHeader) {
@@ -150,7 +109,7 @@ public class RequestSettingListKVItem extends AbstractItem<RequestSettingListKVI
                         .getResources().getStringArray(R.array.headers_array));
                 textViewKey.setAdapter(autoCompleteAdapter);
             }
-            textViewValue = (TextView) view.findViewById(R.id.textViewValue);
+            textViewValue = (EditText) view.findViewById(R.id.textViewValue);
             imageButtonRemove = (ImageButton) view.findViewById(R.id.imageButtonRemove);
         }
     }
@@ -159,30 +118,85 @@ public class RequestSettingListKVItem extends AbstractItem<RequestSettingListKVI
 
         @Override
         public void onClick(View v, int position, FastAdapter<IItem> fastAdapter, IItem item) {
-            if (item instanceof RequestSettingListKVItem && fastAdapter instanceof
-                    FastItemAdapter) {
-                RequestSettingListKVItem kvItem = (RequestSettingListKVItem) item;
-                FastItemAdapter<IItem> fastItemAdapter = (FastItemAdapter<IItem>) fastAdapter;
-                if (position < 0 || position >= fastItemAdapter.getItemCount()) return;
-                if (RequestSettingDataUtils.isUnique(fastItemAdapter.getAdapterItems(), kvItem
-                        .getRequestSettingType())) {
-                    kvItem.setKey(null);
-                    kvItem.setValue(null);
-                    fastItemAdapter.notifyAdapterItemChanged(position);
-                    return;
-                }
-                v.getRootView().clearFocus();
-                InputMethodManager keyboard = (InputMethodManager) v.getContext()
-                        .getSystemService(Context.INPUT_METHOD_SERVICE);
-                keyboard.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                fastItemAdapter.remove(position);
+            RequestSettingListKVItem kvItem = (RequestSettingListKVItem) item;
+            FastItemAdapter<IItem> fastItemAdapter = (FastItemAdapter<IItem>) fastAdapter;
+            if (position < 0 || position >= fastItemAdapter.getItemCount()) return;
+            if (RequestSettingDataUtils.isUnique(fastItemAdapter.getAdapterItems(), kvItem
+                    .getRequestSettingType())) {
+                kvItem.setKey(null);
+                kvItem.setValue(null);
+                fastItemAdapter.notifyAdapterItemChanged(position);
+                return;
             }
+            v.getRootView().clearFocus();
+            InputMethodManager keyboard = (InputMethodManager) v.getContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            fastItemAdapter.remove(position);
         }
 
         @Override
         public View onBind(@NonNull RecyclerView.ViewHolder viewHolder) {
             if (viewHolder instanceof RequestSettingListKVItem.MyViewHolder) {
                 return ((MyViewHolder) viewHolder).imageButtonRemove;
+            }
+            return null;
+        }
+    }
+
+    public static class textChangeEvent extends CustomEventHook<IItem> {
+
+        @Override
+        public void attachEvent(View view, final RecyclerView.ViewHolder viewHolder) {
+            if (view.getId() == R.id.textViewKey) {
+                ((EditText) view).addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        RequestSettingListKVItem item = ((RequestSettingListKVItem) getItem
+                                (viewHolder));
+                        if (item == null) return;
+                        item.setKey(s.toString());
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                    }
+                });
+            } else if (view.getId() == R.id.textViewValue) {
+                ((EditText) view).addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        RequestSettingListKVItem item = ((RequestSettingListKVItem) getItem
+                                (viewHolder));
+                        if (item == null) return;
+                        item.setValue(s.toString());
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                    }
+                });
+            }
+        }
+
+        @Nullable
+        @Override
+        public List<View> onBindMany(@NonNull RecyclerView.ViewHolder viewHolder) {
+            if (viewHolder instanceof RequestSettingListKVItem.MyViewHolder) {
+                return Arrays.<View>asList(((MyViewHolder) viewHolder).textViewKey, (
+                        (MyViewHolder) viewHolder).textViewValue);
             }
             return null;
         }

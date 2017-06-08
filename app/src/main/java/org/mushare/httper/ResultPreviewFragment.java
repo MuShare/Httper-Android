@@ -14,13 +14,14 @@ import android.webkit.WebView;
  */
 
 public class ResultPreviewFragment extends Fragment {
+    WebView webview;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
         String url = getArguments() == null ? null : getArguments().getString("url");
-        WebView webview = (WebView) inflater.inflate(R.layout.fragment_preview_result, container,
-                false);
+        webview = new WebView(getContext());
         webview.setInitialScale(100);
         WebSettings webSettings = webview.getSettings();
 //        webSettings.setJavaScriptEnabled(true);
@@ -28,8 +29,47 @@ public class ResultPreviewFragment extends Fragment {
 //        webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
-        if (ResultActivity.responseBody != null)
+        if (savedInstanceState != null)
+            webview.restoreState(savedInstanceState);
+        else if (ResultActivity.responseBody != null) {
             webview.loadDataWithBaseURL(url, ResultActivity.responseBody, "text/html", null, null);
+        }
         return webview;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        webview.saveState(outState);
+    }
+
+    /**
+     * Called when the fragment is visible to the user and actively running. Resumes the WebView.
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        webview.onPause();
+    }
+
+    /**
+     * Called when the fragment is no longer resumed. Pauses the WebView.
+     */
+    @Override
+    public void onResume() {
+        webview.onResume();
+        super.onResume();
+    }
+
+    /**
+     * Called when the fragment is no longer in use. Destroys the internal state of the WebView.
+     */
+    @Override
+    public void onDestroy() {
+        if (webview != null) {
+            webview.destroy();
+            webview = null;
+        }
+        super.onDestroy();
     }
 }

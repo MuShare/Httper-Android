@@ -45,6 +45,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
     RequestRecordDao requestRecordDao;
     Toolbar toolbar;
     MenuItem menuItemSearch;
+    MenuItem menuItemClear;
     View emptyView;
     private FastItemAdapter<IItem> itemAdapter;
 
@@ -122,17 +123,19 @@ public class RequestHistoryActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_history_activity);
         menuItemSearch = toolbar.getMenu().findItem(R.id.menuSearchHistory);
+        menuItemClear = toolbar.getMenu().findItem(R.id.menuClearHistory);
         MenuItemCompat.setOnActionExpandListener(menuItemSearch, new MenuItemCompat
                 .OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
-                toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(false);
+                if (menuItemClear.isVisible()) menuItemClear.setVisible(false);
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(true);
+                if (itemAdapter.getAdapterItemCount() > 0)
+                    menuItemClear.setVisible(true);
                 return true;
             }
         });
@@ -171,7 +174,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
         });
 
         if (itemAdapter.getAdapterItemCount() == 0)
-            toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(false);
+            menuItemClear.setVisible(false);
         else emptyView.setVisibility(View.GONE);
     }
 
@@ -185,7 +188,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
                 requestRecordDao.deleteAll();
                 itemAdapter.clear();
                 emptyView.setVisibility(View.VISIBLE);
-                toolbar.getMenu().findItem(R.id.menuClearHistory).setVisible(false);
+                menuItemClear.setVisible(false);
             }
         }).setNegativeButton(R.string.dialog_cancel, null).create();
     }

@@ -18,7 +18,7 @@ public class ResultRawFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_raw_result, container, false);
+        View view = inflater.inflate(R.layout.fragment_result_listview, container, false);
         ListView listView = (ListView) view.findViewById(R.id.listView);
         if (ResultActivity.responseBody != null) {
             String[] texts = ResultActivity.responseBody.split("\n");

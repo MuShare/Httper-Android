@@ -3,6 +3,7 @@ package org.mushare.httper;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,6 +19,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +45,7 @@ import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.Response;
 
 
@@ -113,7 +119,6 @@ public class ResultActivity extends AppCompatActivity {
         url = intent.getStringExtra("http") + intent.getStringExtra("url");
         params = (ArrayList<MyPair>) intent.getSerializableExtra("parameter");
         url = HttpUtils.combineUrl(url, params);
-        textViewURL.setText(url);
         headers = (ArrayList<MyPair>) intent.getSerializableExtra("header");
         method = intent.getStringExtra("method");
         body = intent.getStringExtra("body");
@@ -198,6 +203,7 @@ public class ResultActivity extends AppCompatActivity {
     void refreshFinish() {
         MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
+        textViewURL.setText(url);
         textViewStatusCode.setText(String.valueOf(statusCode));
         textViewHeader.setText(responseHeaders);
         refreshView.setVisibility(View.GONE);
@@ -263,22 +269,19 @@ public class ResultActivity extends AppCompatActivity {
 //        return out;
 //    }
 
-//    private CharSequence headersToCharSequence(Header[] headers) {
-//        if (headers == null) return null;
-//        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-//        for (Header header : headers) {
-//            spannableStringBuilder.append(header.getName());
-//            spannableStringBuilder.append(": ");
-//            Spannable value = new SpannableString(header.getValue());
-//            value.setSpan(new ForegroundColorSpan(getResources().getColor(R.color
-//                    .colorTextSecondary)), 0, value.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            spannableStringBuilder.append(value);
-//            spannableStringBuilder.append("\n");
-//        }
-//        spannableStringBuilder.delete(spannableStringBuilder.length() - 1, spannableStringBuilder
-//                .length());
-//        return spannableStringBuilder;
-//    }
+    private CharSequence headersToCharSequence(Headers headers) {
+        if (headers == null) return null;
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+        for (int i = 0, size = headers.size(); i < size; i++) {
+            Spannable key = new SpannableString(headers.name(i));
+            key.setSpan(new ForegroundColorSpan(Color.parseColor("#F92672")), 0, key.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannableStringBuilder.append(key).append(": ").append(headers.value(i)).append("\n");
+        }
+        spannableStringBuilder.delete(spannableStringBuilder.length() - 1, spannableStringBuilder
+                .length());
+        return spannableStringBuilder;
+    }
 
     @Override
     public void onBackPressed() {
@@ -357,8 +360,9 @@ public class ResultActivity extends AppCompatActivity {
         @Override
         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
             ResultActivity.responseBody = response.body().string();
+            ResultActivity.this.url = response.request().url().toString();
             ResultActivity.this.statusCode = response.code();
-            responseHeaders = response.headers().toString();
+            responseHeaders = headersToCharSequence(response.headers());
             try {
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
                         (cacheFile));

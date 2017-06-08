@@ -82,15 +82,11 @@ public class RequestSettingListStickTitle extends AbstractItem<RequestSettingLis
 
         @Override
         public void onClick(View v, int position, FastAdapter<IItem> fastAdapter, IItem item) {
-            if (item instanceof RequestSettingListStickTitle && fastAdapter instanceof
-                    FastItemAdapter) {
-                RequestSettingType type = ((RequestSettingListStickTitle) item)
-                        .getRequestSettingType();
-                if (type == RequestSettingType.body) return;
-                FastItemAdapter<IItem> fastItemAdapter = (FastItemAdapter<IItem>) fastAdapter;
-                fastItemAdapter.add(RequestSettingDataUtils.lastIndexOf(fastItemAdapter
-                        .getAdapterItems(), type) + 1, new RequestSettingListKVItem(type));
-            }
+            RequestSettingType type = ((RequestSettingListStickTitle) item).getRequestSettingType();
+            if (type == RequestSettingType.body) return;
+            FastItemAdapter<IItem> fastItemAdapter = (FastItemAdapter<IItem>) fastAdapter;
+            fastItemAdapter.add(RequestSettingDataUtils.lastIndexOf(fastItemAdapter
+                    .getAdapterItems(), type) + 1, new RequestSettingListKVItem(type));
         }
 
         @Override
