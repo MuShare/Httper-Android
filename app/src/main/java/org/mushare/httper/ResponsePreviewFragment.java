@@ -13,7 +13,7 @@ import android.webkit.WebView;
  * Created by dklap on 5/4/2017.
  */
 
-public class ResultPreviewFragment extends Fragment {
+public class ResponsePreviewFragment extends Fragment {
     WebView webview;
 
     @Nullable
@@ -31,8 +31,9 @@ public class ResultPreviewFragment extends Fragment {
         webSettings.setDisplayZoomControls(false);
         if (savedInstanceState != null)
             webview.restoreState(savedInstanceState);
-        else if (ResultActivity.responseBody != null) {
-            webview.loadDataWithBaseURL(url, ResultActivity.responseBody, "text/html", null, null);
+        else if (ResponseActivity.responseBody != null) {
+            webview.loadDataWithBaseURL(url, ResponseActivity.responseBody, "text/html", null,
+                    null);
         }
         return webview;
     }

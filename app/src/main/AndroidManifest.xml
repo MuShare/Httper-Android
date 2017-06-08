@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ResultActivity"
+            android:name=".ResponseActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"/>
         <activity
             android:name=".RequestHistoryActivity"

@@ -13,17 +13,17 @@ import android.widget.ListView;
  * Created by dklap on 5/4/2017.
  */
 
-public class ResultRawFragment extends Fragment {
+public class ResponseRawFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_result_listview, container, false);
+        View view = inflater.inflate(R.layout.fragment_response_listview, container, false);
         ListView listView = (ListView) view.findViewById(R.id.listView);
-        if (ResultActivity.responseBody != null) {
-            String[] texts = ResultActivity.responseBody.split("\n");
+        if (ResponseActivity.responseBody != null) {
+            String[] texts = ResponseActivity.responseBody.split("\n");
             listView.setAdapter(new ArrayAdapter<>(getContext(), R
-                    .layout.list_result_textview, texts));
+                    .layout.list_response_textview, texts));
         }
         return view;
     }

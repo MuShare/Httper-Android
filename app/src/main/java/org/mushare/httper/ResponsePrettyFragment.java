@@ -20,7 +20,7 @@ import java.util.Arrays;
  * Created by dklap on 5/4/2017.
  */
 
-public class ResultPrettyFragment extends Fragment {
+public class ResponsePrettyFragment extends Fragment {
     ArrayList<CharSequence> texts;
     ListView listView;
 
@@ -28,25 +28,25 @@ public class ResultPrettyFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
     final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_result_listview, container, false);
+        View view = inflater.inflate(R.layout.fragment_response_listview, container, false);
         listView = (ListView) view.findViewById(R.id.listView);
-        if (ResultActivity.responseBody != null) {
+        if (ResponseActivity.responseBody != null) {
             try {
-                MyJSONObject jsonObject = new MyJSONObject(ResultActivity.responseBody);
+                MyJSONObject jsonObject = new MyJSONObject(ResponseActivity.responseBody);
                 texts = jsonObject.getCharSequences(2);
             } catch (JSONException e) {
                 try {
-                    MyJSONArray jsonArray = new MyJSONArray(ResultActivity
+                    MyJSONArray jsonArray = new MyJSONArray(ResponseActivity
                             .responseBody);
                     texts = jsonArray.getCharSequences(2);
                 } catch (JSONException e1) {
                     texts = new ArrayList<>();
-                    texts.addAll(Arrays.asList(ResultActivity.responseBody.split
+                    texts.addAll(Arrays.asList(ResponseActivity.responseBody.split
                             ("\n")));
                 }
             }
             listView.setAdapter(new ArrayAdapter<>(getContext(), R
-                    .layout.list_result_textview, texts));
+                    .layout.list_response_textview, texts));
         }
         return view;
     }

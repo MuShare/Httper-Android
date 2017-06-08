@@ -198,7 +198,7 @@ public class MainFragment extends Fragment {
                 requestRecord.setBody(body);
                 requestRecordDao.insert(requestRecord);
 
-                Intent intent = new Intent(getContext(), ResultActivity.class);
+                Intent intent = new Intent(getContext(), ResponseActivity.class);
                 intent.putExtra("method", spinnerMethod.getSelectedItem().toString());
                 intent.putExtra("http", spinnerHttp.getSelectedItem().toString());
                 intent.putExtra("url", editTextUrl.getText().toString());

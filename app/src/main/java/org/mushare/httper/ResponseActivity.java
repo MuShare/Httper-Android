@@ -3,7 +3,6 @@ package org.mushare.httper;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -47,13 +46,14 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 
 /**
  * Created by dklap on 4/30/2017.
  */
 
-public class ResultActivity extends AppCompatActivity {
+public class ResponseActivity extends AppCompatActivity {
     static final int MSG_DONE = 0;
     static final int MSG_Fail = 1;
     static String responseBody;
@@ -144,8 +144,10 @@ public class ResultActivity extends AppCompatActivity {
             }
             MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
             viewPager.setAdapter(pagerAdapter);
+            url = savedInstanceState.getString("url");
             statusCode = savedInstanceState.getInt("statusCode");
             responseHeaders = savedInstanceState.getCharSequence("responseHeaders");
+            textViewURL.setText(url);
             textViewStatusCode.setText(String.valueOf(statusCode));
             textViewHeader.setText(responseHeaders);
         }
@@ -236,6 +238,7 @@ public class ResultActivity extends AppCompatActivity {
         outState.putInt("bottomSheetState", bottomSheetBehavior.getState());
         outState.putInt("statusCode", statusCode);
         outState.putCharSequence("responseHeaders", responseHeaders);
+        outState.putString("url", url);
     }
 
     @Nullable
@@ -273,10 +276,10 @@ public class ResultActivity extends AppCompatActivity {
         if (headers == null) return null;
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
         for (int i = 0, size = headers.size(); i < size; i++) {
-            Spannable key = new SpannableString(headers.name(i));
-            key.setSpan(new ForegroundColorSpan(Color.parseColor("#F92672")), 0, key.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannableStringBuilder.append(key).append(": ").append(headers.value(i)).append("\n");
+            Spannable value = new SpannableString(headers.value(i));
+            value.setSpan(new ForegroundColorSpan(getResources().getColor(R.color
+                    .colorTextSecondary)), 0, value.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannableStringBuilder.append(headers.name(i)).append(": ").append(value).append("\n");
         }
         spannableStringBuilder.delete(spannableStringBuilder.length() - 1, spannableStringBuilder
                 .length());
@@ -291,21 +294,21 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private static class MyHandler extends Handler {
-        private final WeakReference<ResultActivity> mFragment;
+        private final WeakReference<ResponseActivity> mFragment;
 
-        MyHandler(ResultActivity fragment) {
+        MyHandler(ResponseActivity fragment) {
             mFragment = new WeakReference<>(fragment);
         }
 
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == MSG_DONE) {
-                ResultActivity fragment = mFragment.get();
+                ResponseActivity fragment = mFragment.get();
                 if (fragment != null) {
                     fragment.refreshFinish();
                 }
             } else if (msg.what == MSG_Fail) {
-                ResultActivity fragment = mFragment.get();
+                ResponseActivity fragment = mFragment.get();
                 if (fragment != null) {
                     fragment.refreshFail(msg.getData().getString("error"));
                 }
@@ -325,13 +328,13 @@ public class ResultActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    return new ResultPrettyFragment();
+                    return new ResponsePrettyFragment();
                 case 1:
-                    return new ResultRawFragment();
+                    return new ResponseRawFragment();
                 case 2:
                     Bundle bundle = new Bundle();
                     bundle.putString("url", url);
-                    return Fragment.instantiate(ResultActivity.this, ResultPreviewFragment.class
+                    return Fragment.instantiate(ResponseActivity.this, ResponsePreviewFragment.class
                             .getName(), bundle);
             }
             return null;
@@ -359,19 +362,23 @@ public class ResultActivity extends AppCompatActivity {
 
         @Override
         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-            ResultActivity.responseBody = response.body().string();
-            ResultActivity.this.url = response.request().url().toString();
-            ResultActivity.this.statusCode = response.code();
-            responseHeaders = headersToCharSequence(response.headers());
-            try {
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
-                        (cacheFile));
-                bos.write(responseBody.getBytes());
-                bos.flush();
-                bos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            ResponseBody body = response.body();
+            if (body != null) {
+                responseBody = body.string();
+                try {
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
+                            (cacheFile));
+                    bos.write(responseBody.getBytes());
+                    bos.flush();
+                    bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+            url = response.request().url().toString();
+            statusCode = response.code();
+            responseHeaders = headersToCharSequence(response.headers());
+
             refreshing = false;
             myHandler.sendEmptyMessage(MSG_DONE);
         }
