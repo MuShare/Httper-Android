@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.grantland.widget.AutofitHelper;
+import okhttp3.HttpUrl;
 
 import static android.app.Activity.RESULT_OK;
 import static org.mushare.httper.utils.HttpUtils.jsonArrayToPairList;
@@ -90,7 +91,8 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() > 0) buttonSend.setEnabled(true);
+                if (s.length() > 0 && HttpUrl.parse("http://" + s) != null)
+                    buttonSend.setEnabled(true);
                 else buttonSend.setEnabled(false);
             }
 
