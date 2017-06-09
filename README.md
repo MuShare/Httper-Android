@@ -10,4 +10,6 @@ Developers can submit a HTTP request with several headers, parameters and raw re
 * *Project function:* After create a project, you can add a group of requests into a project. 
 * *User account:* Httper also supports to synchronize between multiple devices with your account signing in. Your projects and requestes can be synchronized from cloud in a new device if you sign in your account.
 
+<a href='https://play.google.com/store/apps/details?id=org.mushare.httper&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="200dp"/></a>
+
 Httper is an open source software. If you like our app, please give us a star on Github: https://github.com/MuShare/Httper-Android
