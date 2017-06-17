@@ -1,137 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/scrollViewAbout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/linearLayoutAbout"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp">
 
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginRight="16dp"
-                android:tint="@color/colorAccent"
-                app:srcCompat="@drawable/ic_logo"
-                tools:ignore="ContentDescription"/>
-
-            <TextView
-                style="@style/AppTheme.TextAppearanceLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"/>
-
-        </LinearLayout>
-
-        <TextView
-            style="@style/AppTheme.TextAppearanceSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:text="@string/about_view_description"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorDivider"/>
-
-        <TextView
-            style="@style/AppTheme.TextAppearanceNormal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:text="@string/about_view_copy_right"/>
+            android:tint="@color/colorAccent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_logo"/>
 
         <TextView
-            style="@style/AppTheme.TextAppearanceSmall"
-            android:layout_width="match_parent"
+            style="@style/AppTheme.TextAppearanceLarge"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:text="@string/about_view_us"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorDivider"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:text="@string/app_name"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView"
+            app:layout_constraintLeft_toRightOf="@+id/imageView"
+            app:layout_constraintTop_toTopOf="@+id/imageView"/>
 
-            <ImageButton
-                android:id="@+id/imageButtonLink"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_selectable_item"
-                android:contentDescription="@string/about_view_link"
-                android:padding="8dp"
-                app:srcCompat="@drawable/ic_link"/>
-
-            <ImageButton
-                android:id="@+id/imageButtonGithub"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="48dp"
-                android:layout_marginRight="48dp"
-                android:background="@drawable/bg_selectable_item"
-                android:contentDescription="@string/about_view_github"
-                android:padding="8dp"
-                app:srcCompat="@drawable/ic_github"/>
-
-            <ImageButton
-                android:id="@+id/imageButtonStore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_selectable_item"
-                android:contentDescription="@string/about_view_store"
-                android:padding="8dp"
-                app:srcCompat="@drawable/ic_play_store"/>
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorDivider"/>
 
         <TextView
-            style="@style/AppTheme.TextAppearanceNormal"
-            android:layout_width="match_parent"
+            android:id="@+id/textView4"
+            style="@style/AppTheme.TextAppearanceSmall"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/about_view_description"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView"/>
+
+        <View
+            android:id="@+id/view4"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorDivider"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView4"/>
+
+        <TextView
+            android:id="@+id/textView5"
+            style="@style/AppTheme.TextAppearanceNormal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/about_view_copy_right"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/imageButtonLink"
+            app:layout_constraintTop_toBottomOf="@+id/view4"/>
+
+        <TextView
+            android:id="@+id/textView6"
+            style="@style/AppTheme.TextAppearanceSmall"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/about_view_us"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/imageButtonLink"
+            app:layout_constraintTop_toBottomOf="@+id/textView5"/>
+
+        <View
+            android:id="@+id/view5"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorDivider"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView6"/>
+
+
+        <ImageButton
+            android:id="@+id/imageButtonLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/bg_selectable_item"
+            android:contentDescription="@string/about_view_link"
+            android:padding="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/view5"
+            app:layout_constraintRight_toLeftOf="@+id/imageButtonGithub"
+            app:layout_constraintTop_toBottomOf="@+id/view4"
+            app:layout_constraintVertical_bias="0.518"
+            app:srcCompat="@drawable/ic_link"/>
+
+        <ImageButton
+            android:id="@+id/imageButtonGithub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/bg_selectable_item"
+            android:contentDescription="@string/about_view_github"
+            android:padding="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/view5"
+            app:layout_constraintRight_toLeftOf="@+id/imageButtonStore"
+            app:layout_constraintTop_toBottomOf="@+id/view4"
+            app:layout_constraintVertical_bias="0.518"
+            app:srcCompat="@drawable/ic_github"/>
+
+        <ImageButton
+            android:id="@+id/imageButtonStore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/bg_selectable_item"
+            android:contentDescription="@string/about_view_store"
+            android:padding="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/view5"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view4"
+            app:layout_constraintVertical_bias="0.518"
+            app:srcCompat="@drawable/ic_play_store"/>
+
+
+        <TextView
+            android:id="@+id/textView7"
+            style="@style/AppTheme.TextAppearanceNormal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:text="@string/about_view_licenses"
-            android:textColor="@color/colorAccent"/>
+            android:textColor="@color/colorAccent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view5"/>
 
         <View
-            android:layout_width="match_parent"
+            android:id="@+id/view6"
+            android:layout_width="0dp"
             android:layout_height="1dp"
-            android:background="@color/colorDivider"/>
-    </LinearLayout>
+            android:layout_marginTop="16dp"
+            android:background="@color/colorDivider"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView7"/>
+
+        <LinearLayout
+            android:id="@+id/linearLayoutAbout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view6"/>
+    </android.support.constraint.ConstraintLayout>
 </ScrollView>
