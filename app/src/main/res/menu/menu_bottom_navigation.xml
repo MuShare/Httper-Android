@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_tab_request"
+        android:title="@string/bottom_tab_request"/>
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_tab_project"
+        android:title="@string/bottom_tab_project"/>
+    <item
+        android:id="@+id/action_navigation"
+        android:icon="@drawable/ic_tab_settings"
+        android:title="@string/bottom_tab_settings"/>
+</menu>
