@@ -14,9 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.mikepenz.fastadapter.FastAdapter;
-import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
-import com.mikepenz.fastadapter.items.AbstractItem;
 import com.mikepenz.fastadapter.listeners.ClickEventHook;
 import com.mikepenz.fastadapter.listeners.CustomEventHook;
 
@@ -30,25 +28,21 @@ import java.util.List;
  * Created by dklap on 4/28/2017.
  */
 
-public class RequestSettingListKVItem extends AbstractItem<RequestSettingListKVItem,
-        RequestSettingListKVItem.MyViewHolder> implements Serializable {
+public class RequestSettingListKVItem extends
+        AbstractRequestSettingListItem<RequestSettingListKVItem, RequestSettingListKVItem
+                .MyViewHolder> implements Serializable {
     private String key;
     private String value;
-    private RequestSettingType requestSettingType;
 
     RequestSettingListKVItem(RequestSettingType requestSettingType) {
-        this.requestSettingType = requestSettingType;
+        super(requestSettingType);
     }
 
 
     RequestSettingListKVItem(RequestSettingType requestSettingType, String key, String value) {
-        this.requestSettingType = requestSettingType;
+        super(requestSettingType);
         this.key = key;
         this.value = value;
-    }
-
-    public RequestSettingType getRequestSettingType() {
-        return requestSettingType;
     }
 
     public String getKey() {
@@ -114,12 +108,14 @@ public class RequestSettingListKVItem extends AbstractItem<RequestSettingListKVI
         }
     }
 
-    public static class RemoveEvent extends ClickEventHook<IItem> {
+    public static class RemoveEvent extends ClickEventHook<AbstractRequestSettingListItem> {
 
         @Override
-        public void onClick(View v, int position, FastAdapter<IItem> fastAdapter, IItem item) {
+        public void onClick(View v, int position, FastAdapter<AbstractRequestSettingListItem>
+                fastAdapter, AbstractRequestSettingListItem item) {
             RequestSettingListKVItem kvItem = (RequestSettingListKVItem) item;
-            FastItemAdapter<IItem> fastItemAdapter = (FastItemAdapter<IItem>) fastAdapter;
+            FastItemAdapter<AbstractRequestSettingListItem> fastItemAdapter =
+                    (FastItemAdapter<AbstractRequestSettingListItem>) fastAdapter;
             if (position < 0 || position >= fastItemAdapter.getItemCount()) return;
             if (RequestSettingDataUtils.isUnique(fastItemAdapter.getAdapterItems(), kvItem
                     .getRequestSettingType())) {
@@ -144,7 +140,7 @@ public class RequestSettingListKVItem extends AbstractItem<RequestSettingListKVI
         }
     }
 
-    public static class textChangeEvent extends CustomEventHook<IItem> {
+    public static class textChangeEvent extends CustomEventHook<AbstractRequestSettingListItem> {
 
         @Override
         public void attachEvent(View view, final RecyclerView.ViewHolder viewHolder) {

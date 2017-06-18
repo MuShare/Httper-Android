@@ -3,16 +3,18 @@ package org.mushare.httper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.mikepenz.fastadapter.items.AbstractItem;
-
 import java.io.Serializable;
 
 /**
  * Created by dklap on 4/28/2017.
  */
 
-public class RequestSettingListBodyItem extends AbstractItem<RequestSettingListBodyItem,
-        RequestSettingListBodyItem.MyViewHolder> implements Serializable {
+public class RequestSettingListBodyItem extends
+        AbstractRequestSettingListItem<RequestSettingListBodyItem, RequestSettingListBodyItem
+                .MyViewHolder> implements Serializable {
+    RequestSettingListBodyItem() {
+        super(RequestSettingType.body);
+    }
 
 //    public RequestSettingType getRequestSettingType() {
 //        return RequestSettingType.body;

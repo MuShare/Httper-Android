@@ -23,11 +23,11 @@ import android.widget.Spinner;
 
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
-import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.mushare.httper.AbstractRequestSettingListItem.RequestSettingType;
 import org.mushare.httper.dialog.ClearRequestDialog;
 import org.mushare.httper.dialog.RequestRawBodyDialog;
 import org.mushare.httper.entity.DaoSession;
@@ -55,7 +55,7 @@ import static org.mushare.httper.utils.HttpUtils.pairListToJSONArray;
 
 public class MainFragment extends Fragment {
     final int HISTORY_CODE = 0;
-    FastItemAdapter<IItem> adapter;
+    FastItemAdapter<AbstractRequestSettingListItem> adapter;
     MyStickyHeader stickyHeader;
     RequestRecordDao requestRecordDao;
 
@@ -113,9 +113,11 @@ public class MainFragment extends Fragment {
         adapter.withEventHook(new RequestSettingListStickTitle.AddEvent()).withEventHook(new
                 RequestSettingListKVItem.RemoveEvent()).withEventHook(new
                 RequestSettingListKVItem.textChangeEvent());
-        adapter.withOnClickListener(new FastAdapter.OnClickListener<IItem>() {
+        adapter.withOnClickListener(new FastAdapter
+                .OnClickListener<AbstractRequestSettingListItem>() {
             @Override
-            public boolean onClick(View v, IAdapter<IItem> adapter, IItem item, int position) {
+            public boolean onClick(View v, IAdapter<AbstractRequestSettingListItem> adapter,
+                                   AbstractRequestSettingListItem item, int position) {
                 if (item instanceof RequestSettingListBodyItem) {
                     DialogFragment newFragment = new RequestRawBodyDialog();
                     newFragment.setTargetFragment(MainFragment.this, 0);
@@ -239,7 +241,7 @@ public class MainFragment extends Fragment {
         spinnerMethod.setSelection(0);
         spinnerHttp.setSelection(0);
         editTextUrl.setText(null);
-        adapter.set(Arrays.<IItem>asList(new RequestSettingListStickTitle
+        adapter.set(Arrays.<AbstractRequestSettingListItem>asList(new RequestSettingListStickTitle
                 (RequestSettingType.header), new RequestSettingListKVItem
                 (RequestSettingType.header), new RequestSettingListStickTitle
                 (RequestSettingType.parameter), new RequestSettingListKVItem
@@ -258,7 +260,7 @@ public class MainFragment extends Fragment {
 
     public ArrayList<MyPair> getHeaders() {
         ArrayList<MyPair> header = new ArrayList<>();
-        for (IItem iItem : adapter.getAdapterItems()) {
+        for (AbstractRequestSettingListItem iItem : adapter.getAdapterItems()) {
             RequestSettingListKVItem item;
             if (iItem instanceof RequestSettingListKVItem && (item = (RequestSettingListKVItem)
                     iItem).getRequestSettingType() == RequestSettingType.header) {
@@ -274,7 +276,7 @@ public class MainFragment extends Fragment {
 
     public ArrayList<MyPair> getParameters() {
         ArrayList<MyPair> param = new ArrayList<>();
-        for (IItem iItem : adapter.getAdapterItems()) {
+        for (AbstractRequestSettingListItem iItem : adapter.getAdapterItems()) {
             RequestSettingListKVItem item;
             if (iItem instanceof RequestSettingListKVItem && (item = (RequestSettingListKVItem)
                     iItem).getRequestSettingType() == RequestSettingType.parameter) {
@@ -304,7 +306,8 @@ public class MainFragment extends Fragment {
     private void restoreAdapter(Bundle savedInstanceState) {
         stickyHeader.setType((RequestSettingType) savedInstanceState.getSerializable
                 ("stickyHeader"));
-        adapter.set((ArrayList<IItem>) savedInstanceState.getSerializable("dataSet"));
+        adapter.set((ArrayList<AbstractRequestSettingListItem>) savedInstanceState
+                .getSerializable("dataSet"));
         adapter.withSavedInstanceState(savedInstanceState);
     }
 
@@ -319,7 +322,7 @@ public class MainFragment extends Fragment {
             int spinnerHttpSelection = indexOfStringInArray(getResources().getStringArray(R.array
                     .http_array), requestRecord.getHttp());
             if (spinnerHttpSelection == -1 || spinnerMethodSelection == -1) return;
-            ArrayList<IItem> dataSet = new ArrayList<>();
+            ArrayList<AbstractRequestSettingListItem> dataSet = new ArrayList<>();
             try {
                 dataSet.add(new RequestSettingListStickTitle(RequestSettingType.header));
                 String headerString = requestRecord.getHeaders();

@@ -1,10 +1,8 @@
 package org.mushare.httper.utils;
 
-import com.mikepenz.fastadapter.IItem;
-
+import org.mushare.httper.AbstractRequestSettingListItem;
+import org.mushare.httper.AbstractRequestSettingListItem.RequestSettingType;
 import org.mushare.httper.RequestSettingListKVItem;
-import org.mushare.httper.RequestSettingListStickTitle;
-import org.mushare.httper.RequestSettingType;
 
 import java.util.List;
 
@@ -13,35 +11,32 @@ import java.util.List;
  */
 
 public class RequestSettingDataUtils {
-    public static boolean isUnique(List<IItem> data, RequestSettingType type) {
+    public static boolean isUnique(List<AbstractRequestSettingListItem> data, RequestSettingType
+            type) {
         boolean flag = false;
-        for (IItem iItem : data) {
+        for (AbstractRequestSettingListItem iItem : data) {
             if (flag)
-                return !(iItem instanceof RequestSettingListKVItem) || ((RequestSettingListKVItem)
-                        iItem).getRequestSettingType() != type;
-            if (iItem instanceof RequestSettingListKVItem && ((RequestSettingListKVItem) iItem)
-                    .getRequestSettingType() == type) flag = true;
+                return !(iItem instanceof RequestSettingListKVItem) || iItem
+                        .getRequestSettingType() != type;
+            if (iItem instanceof RequestSettingListKVItem && iItem.getRequestSettingType() == type)
+                flag = true;
         }
         return flag;
     }
 
-    public static int lastIndexOf(List<IItem> data, RequestSettingType type) {
+    public static int lastIndexOf(List<AbstractRequestSettingListItem> data, RequestSettingType
+            type) {
         for (int i = data.size() - 1; i >= 0; i--) {
-            IItem iItem = data.get(i);
-            if (iItem instanceof RequestSettingListKVItem && ((RequestSettingListKVItem) iItem)
-                    .getRequestSettingType() == type)
+            AbstractRequestSettingListItem iItem = data.get(i);
+            if (iItem instanceof RequestSettingListKVItem && iItem.getRequestSettingType() == type)
                 return i;
         }
         return -1;
     }
 
-    public static RequestSettingType findTitleTypeBeforeIndex(List<IItem> data, int index) {
+    public static RequestSettingType findTitleTypeBeforeIndex
+            (List<AbstractRequestSettingListItem> data, int index) {
         if (index == 0) return RequestSettingType.header;
-        for (int i = index - 1; i >= 0; i--) {
-            IItem iItem = data.get(i);
-            if (iItem instanceof RequestSettingListStickTitle)
-                return ((RequestSettingListStickTitle) iItem).getRequestSettingType();
-        }
-        return RequestSettingType.header;
+        return data.get(index - 1).getRequestSettingType();
     }
 }

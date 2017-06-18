@@ -9,6 +9,7 @@
     <string name="main_view_method">Request Method</string>
     <string name="main_view_url_example">www.example.com</string>
     <string name="main_view_send_request">Send Request</string>
+    <string name="main_view_save_to_project">Save to Project</string>
     <string name="main_view_headers">Headers</string>
     <string name="main_view_params">Parameters</string>
     <string name="main_view_body">Body</string>

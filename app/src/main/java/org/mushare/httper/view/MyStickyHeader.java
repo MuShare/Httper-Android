@@ -7,8 +7,8 @@ import android.view.MotionEvent;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import org.mushare.httper.AbstractRequestSettingListItem.RequestSettingType;
 import org.mushare.httper.R;
-import org.mushare.httper.RequestSettingType;
 
 /**
  * Created by dklap on 6/4/2017.

@@ -7,9 +7,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.mikepenz.fastadapter.FastAdapter;
-import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
-import com.mikepenz.fastadapter.items.AbstractItem;
 import com.mikepenz.fastadapter.listeners.ClickEventHook;
 
 import org.mushare.httper.utils.RequestSettingDataUtils;
@@ -21,12 +19,12 @@ import java.util.List;
  * Created by dklap on 5/21/2017.
  */
 
-public class RequestSettingListStickTitle extends AbstractItem<RequestSettingListStickTitle,
-        RequestSettingListStickTitle.MyViewHolder> implements Serializable {
-    private RequestSettingType requestSettingType;
+public class RequestSettingListStickTitle extends
+        AbstractRequestSettingListItem<RequestSettingListStickTitle, RequestSettingListStickTitle
+                .MyViewHolder> implements Serializable {
 
     public RequestSettingListStickTitle(RequestSettingType requestSettingType) {
-        this.requestSettingType = requestSettingType;
+        super(requestSettingType);
     }
 
     public RequestSettingType getRequestSettingType() {
@@ -78,13 +76,15 @@ public class RequestSettingListStickTitle extends AbstractItem<RequestSettingLis
         }
     }
 
-    public static class AddEvent extends ClickEventHook<IItem> {
+    public static class AddEvent extends ClickEventHook<AbstractRequestSettingListItem> {
 
         @Override
-        public void onClick(View v, int position, FastAdapter<IItem> fastAdapter, IItem item) {
-            RequestSettingType type = ((RequestSettingListStickTitle) item).getRequestSettingType();
+        public void onClick(View v, int position, FastAdapter<AbstractRequestSettingListItem>
+                fastAdapter, AbstractRequestSettingListItem item) {
+            RequestSettingType type = item.getRequestSettingType();
             if (type == RequestSettingType.body) return;
-            FastItemAdapter<IItem> fastItemAdapter = (FastItemAdapter<IItem>) fastAdapter;
+            FastItemAdapter<AbstractRequestSettingListItem> fastItemAdapter =
+                    (FastItemAdapter<AbstractRequestSettingListItem>) fastAdapter;
             fastItemAdapter.add(RequestSettingDataUtils.lastIndexOf(fastItemAdapter
                     .getAdapterItems(), type) + 1, new RequestSettingListKVItem(type));
         }

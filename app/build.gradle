@@ -35,5 +35,4 @@ dependencies {
     compile 'com.mikepenz:fastadapter:2.6.0@aar'
     compile 'org.greenrobot:greendao:3.2.2'
     compile 'me.grantland:autofittextview:0.2.1'
-    compile 'devlight.io:navigationtabbar:1.2.5'
 }
