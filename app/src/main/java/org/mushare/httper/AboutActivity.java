@@ -21,6 +21,8 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         scrollView = (ScrollView) findViewById(R.id.scrollViewAbout);
+        ((TextView) findViewById(R.id.textViewVersion)).setText(getString(R.string
+                .about_view_version, BuildConfig.VERSION_NAME));
         findViewById(R.id.imageButtonLink).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

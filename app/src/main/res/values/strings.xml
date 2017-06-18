@@ -48,6 +48,7 @@
     <string name="dialog_cancel">Cancel</string>
 
     <string name="about_view_description">App for developers to test REST API.\nTest anywhere and anytime without desktops.</string>
+    <string name="about_view_version">v%s</string>
     <string name="about_view_copy_right">Copyright © 2017</string>
     <string name="about_view_us">MuShare Group</string>
     <string name="about_view_licenses">Licenses</string>
@@ -136,5 +137,9 @@
         <item>Material Design Iconic Font</item>
         <item>zavoloklom.github.io/material-design-iconic-font/ (SIL Open Font License 1.1)</item>
         <item>https://github.com/zavoloklom/material-design-iconic-font</item>
+
+        <item>Special Icon Family</item>
+        <item>Designed by Freepik from Flaticon (Free for commercial use WITH ATTRIBUTION license)</item>
+        <item>http://www.flaticon.com/family/special/lineal</item>
     </string-array>
 </resources>
