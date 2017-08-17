@@ -98,7 +98,13 @@ public class MainFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                if (s.toString().startsWith("http://")) {
+                    spinnerHttp.setSelection(0);
+                    s.delete(0, 7);
+                } else if (s.toString().startsWith("https://")) {
+                    spinnerHttp.setSelection(1);
+                    s.delete(0, 8);
+                }
             }
         });
 
