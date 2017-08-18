@@ -56,8 +56,8 @@ import okhttp3.ResponseBody;
 public class ResponseActivity extends AppCompatActivity {
     static final int MSG_DONE = 0;
     static final int MSG_Fail = 1;
-    static String responseBody;
     final int DIALOG_ERROR_CONNECT = 0;
+    String responseBody;
     ArrayList<MyPair> params;
     ArrayList<MyPair> headers;
     String method;
@@ -332,10 +332,7 @@ public class ResponseActivity extends AppCompatActivity {
                 case 1:
                     return new ResponseRawFragment();
                 case 2:
-                    Bundle bundle = new Bundle();
-                    bundle.putString("url", url);
-                    return Fragment.instantiate(ResponseActivity.this, ResponsePreviewFragment.class
-                            .getName(), bundle);
+                    return new ResponsePreviewFragment();
             }
             return null;
         }

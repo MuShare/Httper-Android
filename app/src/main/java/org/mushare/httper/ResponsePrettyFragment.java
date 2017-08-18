@@ -19,7 +19,6 @@ import java.util.Arrays;
 /**
  * Created by dklap on 5/4/2017.
  */
-
 public class ResponsePrettyFragment extends Fragment {
     ArrayList<CharSequence> texts;
     ListView listView;
@@ -30,23 +29,24 @@ public class ResponsePrettyFragment extends Fragment {
     final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_response_listview, container, false);
         listView = (ListView) view.findViewById(R.id.listView);
-        if (ResponseActivity.responseBody != null) {
+        if (((ResponseActivity) getActivity()).responseBody != null) {
             try {
-                MyJSONObject jsonObject = new MyJSONObject(ResponseActivity.responseBody);
+                MyJSONObject jsonObject = new MyJSONObject(((ResponseActivity) getActivity())
+                        .responseBody);
                 texts = jsonObject.getCharSequences(2);
             } catch (JSONException e) {
                 try {
-                    MyJSONArray jsonArray = new MyJSONArray(ResponseActivity
+                    MyJSONArray jsonArray = new MyJSONArray(((ResponseActivity) getActivity())
                             .responseBody);
                     texts = jsonArray.getCharSequences(2);
                 } catch (JSONException e1) {
                     texts = new ArrayList<>();
-                    texts.addAll(Arrays.asList(ResponseActivity.responseBody.split
+                    texts.addAll(Arrays.asList(((ResponseActivity) getActivity()).responseBody.split
                             ("\n")));
                 }
             }
-            listView.setAdapter(new ArrayAdapter<>(getContext(), R
-                    .layout.list_response_textview, texts));
+            listView.setAdapter(new ArrayAdapter<>(getContext(), R.layout.list_response_textview,
+                    texts));
         }
         return view;
     }

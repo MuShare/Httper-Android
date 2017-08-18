@@ -20,7 +20,6 @@ public class ResponsePreviewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
-        String url = getArguments() == null ? null : getArguments().getString("url");
         webview = new WebView(getContext());
         webview.setInitialScale(100);
         WebSettings webSettings = webview.getSettings();
@@ -29,20 +28,22 @@ public class ResponsePreviewFragment extends Fragment {
 //        webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
-        if (savedInstanceState != null)
-            webview.restoreState(savedInstanceState);
-        else if (ResponseActivity.responseBody != null) {
-            webview.loadDataWithBaseURL(url, ResponseActivity.responseBody, "text/html", null,
+//        if (savedInstanceState != null)
+//            webview.restoreState(savedInstanceState);
+//        else
+        if (((ResponseActivity) getActivity()).responseBody != null) {
+            webview.loadDataWithBaseURL(((ResponseActivity) getActivity()).url, (
+                            (ResponseActivity) getActivity()).responseBody, "text/html", null,
                     null);
         }
         return webview;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        webview.saveState(outState);
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        webview.saveState(outState);
+//    }
 
     /**
      * Called when the fragment is visible to the user and actively running. Resumes the WebView.

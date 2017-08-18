@@ -20,8 +20,8 @@ public class ResponseRawFragment extends Fragment {
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_response_listview, container, false);
         ListView listView = (ListView) view.findViewById(R.id.listView);
-        if (ResponseActivity.responseBody != null) {
-            String[] texts = ResponseActivity.responseBody.split("\n");
+        if (((ResponseActivity) getActivity()).responseBody != null) {
+            String[] texts = ((ResponseActivity) getActivity()).responseBody.split("\n");
             listView.setAdapter(new ArrayAdapter<>(getContext(), R
                     .layout.list_response_textview, texts));
         }
