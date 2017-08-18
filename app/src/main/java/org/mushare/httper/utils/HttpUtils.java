@@ -1,6 +1,5 @@
 package org.mushare.httper.utils;
 
-import android.net.Uri;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
@@ -25,11 +24,19 @@ public class HttpUtils {
     }
 
     public static String combineUrl(String url, List<MyPair> parameters) {
+//        url = Uri.encode(url,":/");
+//        if (parameters == null || parameters.size() == 0) return url;
+//        List<String> list = new ArrayList<>();
+//        for (MyPair keyAndValue : parameters) {
+//            list.add(Uri.encode(keyAndValue.getFirst()) + "=" + Uri.encode(keyAndValue.getSecond
+//                    ()));
+//        }
+//        if (url.indexOf('?') > -1) return url + '&' + TextUtils.join("&", list);
+//        else return url + '?' + TextUtils.join("&", list);
         if (parameters == null || parameters.size() == 0) return url;
         List<String> list = new ArrayList<>();
         for (MyPair keyAndValue : parameters) {
-            list.add(Uri.encode(keyAndValue.getFirst(), null) + "=" + Uri.encode(keyAndValue
-                    .getSecond(), null));
+            list.add(keyAndValue.getFirst() + "=" + keyAndValue.getSecond());
         }
         if (url.indexOf('?') > -1) return url + '&' + TextUtils.join("&", list);
         else return url + '?' + TextUtils.join("&", list);
