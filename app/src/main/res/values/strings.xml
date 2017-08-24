@@ -41,6 +41,9 @@
     <string name="context_menu_save_pretty">Save text as…</string>
     <string name="context_menu_save">Save raw bytes as…</string>
     <string name="toast_copy">Copied to clipboard</string>
+    <string name="dialog_save_file_title">Save as…</string>
+    <string name="save_file_name">Enter the file name below. A file name cannot contain any of the following characters \\/:*?\"&#060;&#062;|\n\nThe file will be saved to path:\n%s</string>
+    <string name="save_file_error">Permission needed</string>
 
     <string name="error">Cannot access to the URL, check your connection and service provider!\n\nError Message:\n%s</string>
     <string name="clear_history_warn">Do you really want to clear the entire history?</string>

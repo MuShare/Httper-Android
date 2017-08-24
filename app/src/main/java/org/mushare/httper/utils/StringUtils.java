@@ -8,7 +8,7 @@ import java.util.List;
  */
 
 public class StringUtils {
-    static public List<String> splitLines(String string, int num) {
+    static public List<String> splitLines(String string, int minNum) {
         List<String> texts = new ArrayList<>();
 //        StringBuilder stringBuilder = new StringBuilder();
 //        int count = num;
@@ -30,7 +30,7 @@ public class StringUtils {
 //        if (stringBuilder.length() > 0) texts.add(stringBuilder.toString());
         int begin = 0, end = -1;
         while (end != string.length()) {
-            for (int i = 0; i < num; i++) {
+            while (end - begin < minNum) {
                 end = string.indexOf('\n', end + 1);
                 if (end == -1) {
                     end = string.length();

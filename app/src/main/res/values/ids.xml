@@ -6,4 +6,8 @@
     <item name="request_setting_list_param" type="id"/>
     <item name="request_setting_list_body" type="id"/>
     <item name="request_setting_list_title" type="id"/>
+    <item name="context_menu_copy_pretty" type="id"/>
+    <item name="context_menu_save_pretty" type="id"/>
+    <item name="context_menu_copy" type="id"/>
+    <item name="context_menu_save" type="id"/>
 </resources>

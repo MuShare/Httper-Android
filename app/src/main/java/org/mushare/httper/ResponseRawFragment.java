@@ -3,9 +3,9 @@ package org.mushare.httper;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,13 +18,16 @@ import android.widget.Toast;
 
 import org.mushare.httper.utils.StringUtils;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
  * Created by dklap on 5/4/2017.
  */
 
-public class ResponseRawFragment extends Fragment {
+public class ResponseRawFragment extends AbstractSaveFileFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
@@ -33,7 +36,7 @@ public class ResponseRawFragment extends Fragment {
         ListView listView = (ListView) view.findViewById(R.id.listView);
         if (((ResponseActivity) getActivity()).responseBody != null) {
             List<String> texts = StringUtils.splitLines(((ResponseActivity) getActivity())
-                    .responseBody, 15);
+                    .responseBody, 1024);
 //            String[] texts = ((ResponseActivity) getActivity()).responseBody.split("\n");
             listView.setAdapter(new ArrayAdapter<>(getContext(), R.layout.list_response_textview,
                     texts));
@@ -46,13 +49,13 @@ public class ResponseRawFragment extends Fragment {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo
             menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(Menu.NONE, 2, 0, R.string.context_menu_copy);
-        menu.add(Menu.NONE, 3, 1, R.string.context_menu_save);
+        menu.add(Menu.NONE, R.id.context_menu_copy, 0, R.string.context_menu_copy);
+        menu.add(Menu.NONE, R.id.context_menu_save, 1, R.string.context_menu_save);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == 2) {
+        if (item.getItemId() == R.id.context_menu_copy) {
             try {
                 ClipboardManager cm = (ClipboardManager) getContext().getSystemService
                         (Context.CLIPBOARD_SERVICE);
@@ -63,8 +66,27 @@ public class ResponseRawFragment extends Fragment {
                 Toast.makeText(getContext(), "too large", Toast.LENGTH_SHORT).show();
             }
             return true;
-        } else if (item.getItemId() == 3) {
+        } else if (item.getItemId() == R.id.context_menu_save) {
+            preSaveFile();
             return true;
         } else return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void saveFile(OutputStream outputStream) throws IOException {
+        byte[] buffer = new byte[8 * 1024];
+        int bytesRead;
+        FileInputStream in = new FileInputStream(((ResponseActivity) getActivity()).cacheFile);
+        while ((bytesRead = in.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+        in.close();
+        outputStream.flush();
+    }
+
+    @Override
+    public String defaultFileName() {
+        String fileName = Uri.parse(((ResponseActivity) getActivity()).url).getLastPathSegment();
+        return fileName == null ? "" : fileName;
     }
 }
