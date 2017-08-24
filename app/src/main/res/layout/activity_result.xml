@@ -5,89 +5,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
+    android:background="@color/colorPrimary"
     tools:context=".ResponseActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <include
+        android:id="@+id/main"
+        layout="@layout/activity_result_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"/>
 
-        <!--<android.support.v7.widget.Toolbar-->
-        <!--android:id="@+id/toolbar"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="?attr/actionBarSize"-->
-        <!--app:title="@string/app_name">-->
-        <!--</android.support.v7.widget.Toolbar>-->
-        <org.mushare.httper.view.MyTouchableLinearLayout
-            android:id="@+id/appBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <android.support.design.widget.TabLayout
-                android:id="@+id/tabs"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:tabBackground="?selectableItemBackgroundBorderless"
-                app:tabMode="scrollable">
-
-                <android.support.design.widget.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/result_view_pretty"/>
-
-                <android.support.design.widget.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/result_view_raw"/>
-
-                <android.support.design.widget.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/result_view_preview"/>
-            </android.support.design.widget.TabLayout>
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-        </org.mushare.httper.view.MyTouchableLinearLayout>
-    </android.support.design.widget.AppBarLayout>
-
-    <FrameLayout
+    <View
+        android:id="@+id/dimBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <LinearLayout
-            android:id="@+id/refreshingView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/result_view_refreshing"/>
-
-        </LinearLayout>
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </FrameLayout>
+        android:background="#99000000"
+        android:visibility="gone"/>
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/bottom_sheet"
@@ -121,7 +53,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="@string/main_view_url_example"/>
+                android:text="@string/main_view_url_example"
+                android:textIsSelectable="true"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -168,6 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
+                android:textIsSelectable="true"
                 android:typeface="monospace"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

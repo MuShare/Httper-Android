@@ -119,9 +119,12 @@ public class RequestSettingListKVItem extends
             if (position < 0 || position >= fastItemAdapter.getItemCount()) return;
             if (RequestSettingDataUtils.isUnique(fastItemAdapter.getAdapterItems(), kvItem
                     .getRequestSettingType())) {
-                kvItem.setKey(null);
-                kvItem.setValue(null);
-                fastItemAdapter.notifyAdapterItemChanged(position);
+                if ((kvItem.getKey() != null && kvItem.getKey().length() > 0) || (kvItem.getValue
+                        () != null && kvItem.getValue().length() > 0)) {
+                    kvItem.setKey(null);
+                    kvItem.setValue(null);
+                    fastItemAdapter.notifyAdapterItemChanged(position);
+                }
                 return;
             }
             v.getRootView().clearFocus();

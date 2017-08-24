@@ -3,6 +3,7 @@ package org.mushare.httper;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,7 +34,6 @@ import org.mushare.httper.utils.RestClient;
 import org.mushare.httper.view.MyTouchableLinearLayout;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -45,8 +45,13 @@ import java.util.ArrayList;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
+import okhttp3.MediaType;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
+
+import static android.os.Build.VERSION.SDK_INT;
+import static okhttp3.internal.Util.UTF_8;
 
 
 /**
@@ -63,6 +68,7 @@ public class ResponseActivity extends AppCompatActivity {
     String method;
     String url;
     String body;
+    String charset;
 
     Call call;
     MyHandler myHandler = new MyHandler(this);
@@ -85,7 +91,12 @@ public class ResponseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
-
+        if (SDK_INT > 21) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+            findViewById(R.id.main).setPadding(0, getStatusBarHeight(), 0, 0);
+        }
         toolbar = (MyTouchableLinearLayout) findViewById(R.id.appBar);
 
         textViewURL = (TextView) findViewById(R.id.textViewURL);
@@ -129,18 +140,10 @@ public class ResponseActivity extends AppCompatActivity {
             cacheFile.delete();
             refresh();
         } else if (cacheFile.exists()) {
+            charset = savedInstanceState.getString("charset");
             try {
-                BufferedReader buf = new BufferedReader(new InputStreamReader(new FileInputStream
-                        (cacheFile)));
-                String line = buf.readLine();
-                StringBuilder sb = new StringBuilder();
-                while (line != null) {
-                    sb.append(line).append("\n");
-                    line = buf.readLine();
-                }
-                responseBody = sb.toString();
-                buf.close();
-            } catch (Exception ignored) {
+                responseBody = loadCache(charset);
+            } catch (IOException ignored) {
             }
             MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
             viewPager.setAdapter(pagerAdapter);
@@ -171,6 +174,50 @@ public class ResponseActivity extends AppCompatActivity {
                 return true;
             }
         });
+        final View dimBackground = findViewById(R.id.dimBackground);
+        dimBackground.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    dimBackground.setVisibility(View.GONE);
+                    textViewHeader.clearFocus();
+                    textViewURL.clearFocus();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                dimBackground.setVisibility(View.VISIBLE);
+                dimBackground.setAlpha(slideOffset);
+            }
+        });
+    }
+
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    private String loadCache(String charset) throws IOException {
+        InputStreamReader buf = new InputStreamReader(new FileInputStream(cacheFile), charset);
+        char[] buffer = new char[1024];
+        int charsRead;
+        StringBuilder sb = new StringBuilder();
+        while ((charsRead = buf.read(buffer)) != -1) {
+            sb.append(buffer, 0, charsRead);
+        }
+        buf.close();
+        return sb.toString();
     }
 
     private void refresh() {
@@ -239,6 +286,7 @@ public class ResponseActivity extends AppCompatActivity {
         outState.putInt("statusCode", statusCode);
         outState.putCharSequence("responseHeaders", responseHeaders);
         outState.putString("url", url);
+        outState.putString("charset", charset);
     }
 
     @Nullable
@@ -361,15 +409,23 @@ public class ResponseActivity extends AppCompatActivity {
         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
             ResponseBody body = response.body();
             if (body != null) {
-                responseBody = body.string();
                 try {
+                    MediaType mediaType = body.contentType();
+//                    Log.i("mediaType", mediaType != null ? mediaType.toString() : "");
+                    charset = Util.bomAwareCharset(body.source(), mediaType != null ? mediaType
+                            .charset(UTF_8) : UTF_8).displayName();
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
                             (cacheFile));
-                    bos.write(responseBody.getBytes());
+                    byte[] buffer = new byte[8 * 1024];
+                    int bytesRead;
+                    while ((bytesRead = body.byteStream().read(buffer)) != -1) {
+                        bos.write(buffer, 0, bytesRead);
+                    }
                     bos.flush();
                     bos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    body.close();
+                    responseBody = loadCache(charset);
+                } catch (IOException ignored) {
                 }
             }
             url = response.request().url().toString();

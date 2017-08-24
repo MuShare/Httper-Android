@@ -32,9 +32,12 @@ public class ResponsePreviewFragment extends Fragment {
 //            webview.restoreState(savedInstanceState);
 //        else
         if (((ResponseActivity) getActivity()).responseBody != null) {
-            webview.loadDataWithBaseURL(((ResponseActivity) getActivity()).url, (
-                            (ResponseActivity) getActivity()).responseBody, "text/html", null,
-                    null);
+            try {
+                webview.loadDataWithBaseURL(((ResponseActivity) getActivity()).url, (
+                        (ResponseActivity) getActivity()).responseBody, null, null, null);
+            } catch (OutOfMemoryError e) {
+                e.printStackTrace();
+            }
         }
         return webview;
     }
