@@ -4,6 +4,8 @@ package org.mushare.httper.utils;
 import android.app.Application;
 import android.database.Cursor;
 
+import com.squareup.leakcanary.LeakCanary;
+
 import org.greenrobot.greendao.database.Database;
 import org.mushare.httper.entity.DaoMaster;
 import org.mushare.httper.entity.DaoSession;
@@ -21,6 +23,13 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
+        // Normal app init code...
         DaoMaster.OpenHelper openHelper = new DaoMaster.OpenHelper(this, "httper-db") {
             @Override
             public void onUpgrade(Database db, int oldVersion, int newVersion) {

@@ -138,6 +138,10 @@
         <item>A TextView that automatically resizes text to fit perfectly within its bounds. (APACHE 2.0)</item>
         <item>https://github.com/grantland/android-autofittextview</item>
 
+        <item>LeakCanary</item>
+        <item>A memory leak detection library for Android and Java. (APACHE 2.0)</item>
+        <item>https://github.com/square/leakcanary</item>
+
         <item>Material Design Icons</item>
         <item>materialdesignicons.com (SIL Open Font License 1.1)</item>
         <item>https://github.com/Templarian/MaterialDesign</item>

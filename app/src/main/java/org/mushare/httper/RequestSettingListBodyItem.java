@@ -3,15 +3,13 @@ package org.mushare.httper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import java.io.Serializable;
-
 /**
  * Created by dklap on 4/28/2017.
  */
 
 public class RequestSettingListBodyItem extends
         AbstractRequestSettingListItem<RequestSettingListBodyItem, RequestSettingListBodyItem
-                .MyViewHolder> implements Serializable {
+                .MyViewHolder> {
     RequestSettingListBodyItem() {
         super(RequestSettingType.body);
     }

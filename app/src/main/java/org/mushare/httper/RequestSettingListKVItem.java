@@ -20,7 +20,6 @@ import com.mikepenz.fastadapter.listeners.CustomEventHook;
 
 import org.mushare.httper.utils.RequestSettingDataUtils;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,7 +29,7 @@ import java.util.List;
 
 public class RequestSettingListKVItem extends
         AbstractRequestSettingListItem<RequestSettingListKVItem, RequestSettingListKVItem
-                .MyViewHolder> implements Serializable {
+                .MyViewHolder> {
     private String key;
     private String value;
 

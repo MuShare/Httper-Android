@@ -39,4 +39,6 @@ dependencies {
     compile 'com.mikepenz:fastadapter:2.6.0@aar'
     compile 'org.greenrobot:greendao:3.2.2'
     compile 'me.grantland:autofittextview:0.2.1'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.2'
 }

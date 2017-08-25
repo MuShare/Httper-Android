@@ -12,7 +12,6 @@ import com.mikepenz.fastadapter.listeners.ClickEventHook;
 
 import org.mushare.httper.utils.RequestSettingDataUtils;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -21,7 +20,7 @@ import java.util.List;
 
 public class RequestSettingListStickTitle extends
         AbstractRequestSettingListItem<RequestSettingListStickTitle, RequestSettingListStickTitle
-                .MyViewHolder> implements Serializable {
+                .MyViewHolder> {
 
     public RequestSettingListStickTitle(RequestSettingType requestSettingType) {
         super(requestSettingType);
