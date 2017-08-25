@@ -27,10 +27,6 @@ public class RequestSettingListStickTitle extends
         super(requestSettingType);
     }
 
-    public RequestSettingType getRequestSettingType() {
-        return requestSettingType;
-    }
-
     @Override
     public int getType() {
         return R.id.request_setting_list_title;

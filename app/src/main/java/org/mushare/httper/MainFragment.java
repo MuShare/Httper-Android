@@ -62,7 +62,7 @@ public class MainFragment extends Fragment {
     Spinner spinnerMethod;
     Spinner spinnerHttp;
     EditText editTextUrl;
-    String body;
+    String body = "";
 
     @Override
     public void onAttach(Context context) {
@@ -206,6 +206,14 @@ public class MainFragment extends Fragment {
                 requestRecord.setHeaders(pairListToJSONArray(getHeaders()).toString());
                 requestRecord.setParameters(pairListToJSONArray(getParameters()).toString());
                 requestRecord.setBody(body);
+                requestRecordDao.queryBuilder().where(RequestRecordDao.Properties.Method.eq
+                        (requestRecord.getMethod()), RequestRecordDao.Properties.Http.eq
+                        (requestRecord.getHttp()), RequestRecordDao.Properties.Url.eq
+                        (requestRecord.getUrl()), RequestRecordDao.Properties.Headers.eq
+                        (requestRecord.getHeaders()), RequestRecordDao.Properties.Parameters.eq
+                        (requestRecord.getParameters()), RequestRecordDao.Properties.Body.eq
+                        (requestRecord.getBody())).buildDelete()
+                        .executeDeleteWithoutDetachingEntities();
                 requestRecordDao.insert(requestRecord);
 
                 Intent intent = new Intent(getContext(), ResponseActivity.class);
@@ -253,7 +261,7 @@ public class MainFragment extends Fragment {
                 (RequestSettingType.parameter), new RequestSettingListKVItem
                 (RequestSettingType.parameter), new RequestSettingListStickTitle
                 (RequestSettingType.body), new RequestSettingListBodyItem()));
-        body = null;
+        body = "";
     }
 
     public String getBody() {
@@ -331,10 +339,9 @@ public class MainFragment extends Fragment {
             ArrayList<AbstractRequestSettingListItem> dataSet = new ArrayList<>();
             try {
                 dataSet.add(new RequestSettingListStickTitle(RequestSettingType.header));
-                String headerString = requestRecord.getHeaders();
                 List<MyPair> headers;
-                if (headerString == null || (headers = jsonArrayToPairList(new JSONArray
-                        (headerString))).size() == 0)
+                if ((headers = jsonArrayToPairList(new JSONArray(requestRecord.getHeaders())))
+                        .size() == 0)
                     dataSet.add(new RequestSettingListKVItem(RequestSettingType.header));
                 else {
                     for (MyPair myPair : headers) {
@@ -343,10 +350,9 @@ public class MainFragment extends Fragment {
                     }
                 }
                 dataSet.add(new RequestSettingListStickTitle(RequestSettingType.parameter));
-                String paramString = requestRecord.getParameters();
                 List<MyPair> parameters;
-                if (paramString == null || (parameters = jsonArrayToPairList(new JSONArray
-                        (paramString))).size() == 0)
+                if ((parameters = jsonArrayToPairList(new JSONArray(requestRecord.getParameters()
+                ))).size() == 0)
                     dataSet.add(new RequestSettingListKVItem(RequestSettingType.parameter));
                 else {
                     for (MyPair myPair : parameters) {

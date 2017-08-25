@@ -1,52 +1,65 @@
 package org.mushare.httper;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import java.net.MalformedURLException;
 
 /**
  * Created by dklap on 5/4/2017.
  */
 
 public class ResponsePreviewFragment extends Fragment {
-    WebView webview;
+    private WebView mWebView;
+    private boolean mIsWebViewAvailable;
 
-    @Nullable
+    public ResponsePreviewFragment() {
+    }
+
+    /**
+     * Called to instantiate the view. Creates and returns the WebView.
+     */
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
-            Bundle savedInstanceState) {
-        webview = new WebView(getContext());
-        webview.setInitialScale(100);
-        WebSettings webSettings = webview.getSettings();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        if (mWebView != null) {
+            mWebView.destroy();
+        }
+        mWebView = new WebView(getContext());
+        mIsWebViewAvailable = true;
+//        mWebView.setInitialScale(100);
+        WebSettings webSettings = mWebView.getSettings();
 //        webSettings.setJavaScriptEnabled(true);
-//        webSettings.setLoadWithOverviewMode(true);
-//        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
-//        if (savedInstanceState != null)
-//            webview.restoreState(savedInstanceState);
-//        else
+        webSettings.setDefaultTextEncodingName(((ResponseActivity) getActivity()).charset);
         if (((ResponseActivity) getActivity()).responseBody != null) {
+//                webview.loadDataWithBaseURL(((ResponseActivity) getActivity()).url, (
+//                        (ResponseActivity) getActivity()).responseBody, null, null, null);
             try {
-                webview.loadDataWithBaseURL(((ResponseActivity) getActivity()).url, (
-                        (ResponseActivity) getActivity()).responseBody, null, null, null);
-            } catch (OutOfMemoryError e) {
+                mWebView.loadUrl(((ResponseActivity) getActivity()).cacheFile.toURI().toURL()
+                        .toString());
+                mWebView.setWebViewClient(new WebViewClient() {
+                    public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest
+                            webResourceRequest) {
+                        return true;
+                    }
+                });
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
         }
-        return webview;
+        return mWebView;
     }
-
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        webview.saveState(outState);
-//    }
 
     /**
      * Called when the fragment is visible to the user and actively running. Resumes the WebView.
@@ -54,7 +67,7 @@ public class ResponsePreviewFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        webview.onPause();
+        mWebView.onPause();
     }
 
     /**
@@ -62,8 +75,18 @@ public class ResponsePreviewFragment extends Fragment {
      */
     @Override
     public void onResume() {
-        webview.onResume();
+        mWebView.onResume();
         super.onResume();
+    }
+
+    /**
+     * Called when the WebView has been detached from the fragment.
+     * The WebView is no longer available after this time.
+     */
+    @Override
+    public void onDestroyView() {
+        mIsWebViewAvailable = false;
+        super.onDestroyView();
     }
 
     /**
@@ -71,10 +94,17 @@ public class ResponsePreviewFragment extends Fragment {
      */
     @Override
     public void onDestroy() {
-        if (webview != null) {
-            webview.destroy();
-            webview = null;
+        if (mWebView != null) {
+            mWebView.destroy();
+            mWebView = null;
         }
         super.onDestroy();
+    }
+
+    /**
+     * Gets the WebView.
+     */
+    public WebView getWebView() {
+        return mIsWebViewAvailable ? mWebView : null;
     }
 }

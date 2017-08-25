@@ -6,13 +6,15 @@ import com.mikepenz.fastadapter.IClickable;
 import com.mikepenz.fastadapter.IItem;
 import com.mikepenz.fastadapter.items.AbstractItem;
 
+import java.io.Serializable;
+
 /**
  * Created by dklap on 6/18/2017.
  */
 
 public abstract class AbstractRequestSettingListItem<Item extends IItem & IClickable, VH extends
-        RecyclerView.ViewHolder> extends AbstractItem<Item, VH> {
-    protected RequestSettingType requestSettingType;
+        RecyclerView.ViewHolder> extends AbstractItem<Item, VH> implements Serializable {
+    RequestSettingType requestSettingType;
 
     AbstractRequestSettingListItem(RequestSettingType requestSettingType) {
         this.requestSettingType = requestSettingType;

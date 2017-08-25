@@ -11,7 +11,7 @@ import org.greenrobot.greendao.annotation.NotNull;
  * Entity mapped to table "RequestRecord".
  */
 @Entity(indexes = {
-        @Index(value = "createAt DESC", unique = true)
+        @Index(value = "createAt ASC", unique = true)
 })
 public class RequestRecord {
 
@@ -30,8 +30,13 @@ public class RequestRecord {
     @NotNull
     private String url;
 
+    @NotNull
     private String headers;
+
+    @NotNull
     private String parameters;
+
+    @NotNull
     private String body;
 
     public RequestRecord(Long id) {
@@ -39,10 +44,11 @@ public class RequestRecord {
     }
 
 
-    @Generated(hash = 1622503303)
-    public RequestRecord(Long id, @NotNull Long createAt, @NotNull String method,
-                         @NotNull String http, @NotNull String url, String headers,
-                         String parameters, String body) {
+    @Generated(hash = 2099839459)
+    public RequestRecord(Long id, @NotNull Long createAt, @NotNull String method, @NotNull String
+            http,
+                         @NotNull String url, @NotNull String headers, @NotNull String parameters,
+                         @NotNull String body) {
         this.id = id;
         this.createAt = createAt;
         this.method = method;
@@ -107,23 +113,34 @@ public class RequestRecord {
         this.http = http;
     }
 
-
     public Long getId() {
         return this.id;
     }
-
 
     public void setId(Long id) {
         this.id = id;
     }
 
-
     public String getBody() {
-        return this.body;
+        return body;
     }
-
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof RequestRecord && getMethod().equals(((RequestRecord) obj).getMethod
+                ()) && getUrl().equals(((RequestRecord) obj).getUrl()) && getHttp().equals((
+                (RequestRecord) obj).getHttp()) && getHeaders().equals(((RequestRecord)
+                obj).getHeaders()) && getParameters().equals(((RequestRecord) obj).getParameters
+                ()) && getBody().equals(((RequestRecord) obj).getBody());
+    }
+
+    @Override
+    public int hashCode() {
+        return getMethod().hashCode() + getUrl().hashCode() + getHttp().hashCode() + getHeaders()
+                .hashCode() + getParameters().hashCode() + getBody().hashCode();
     }
 }

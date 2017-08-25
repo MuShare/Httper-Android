@@ -63,7 +63,7 @@ public class ResponseRawFragment extends AbstractSaveFileFragment {
                         getActivity()).responseBody));
                 Toast.makeText(getContext(), R.string.toast_copy, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
-                Toast.makeText(getContext(), "too large", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.copy_error, Toast.LENGTH_SHORT).show();
             }
             return true;
         } else if (item.getItemId() == R.id.context_menu_save) {
