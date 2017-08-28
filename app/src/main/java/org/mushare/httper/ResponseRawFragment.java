@@ -6,6 +6,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,12 +17,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.mushare.httper.utils.StringUtils;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 /**
  * Created by dklap on 5/4/2017.
@@ -35,11 +33,8 @@ public class ResponseRawFragment extends AbstractSaveFileFragment {
         View view = inflater.inflate(R.layout.fragment_response_listview, container, false);
         ListView listView = (ListView) view.findViewById(R.id.listView);
         if (((ResponseActivity) getActivity()).responseBody != null) {
-            List<String> texts = StringUtils.splitLines(((ResponseActivity) getActivity())
-                    .responseBody, 1024);
-//            String[] texts = ((ResponseActivity) getActivity()).responseBody.split("\n");
             listView.setAdapter(new ArrayAdapter<>(getContext(), R.layout.list_response_textview,
-                    texts));
+                    ((ResponseActivity) getActivity()).responseBody));
             registerForContextMenu(listView);
         }
         return view;
@@ -59,8 +54,8 @@ public class ResponseRawFragment extends AbstractSaveFileFragment {
             try {
                 ClipboardManager cm = (ClipboardManager) getContext().getSystemService
                         (Context.CLIPBOARD_SERVICE);
-                cm.setPrimaryClip(ClipData.newPlainText("response_body", ((ResponseActivity)
-                        getActivity()).responseBody));
+                cm.setPrimaryClip(ClipData.newPlainText("response_body", TextUtils.join("\n", (
+                        (ResponseActivity) getActivity()).responseBody)));
                 Toast.makeText(getContext(), R.string.toast_copy, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 Toast.makeText(getContext(), R.string.copy_error, Toast.LENGTH_SHORT).show();

@@ -20,19 +20,18 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.mushare.httper.utils.MyJSONArray;
 import org.mushare.httper.utils.MyJSONObject;
-import org.mushare.httper.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by dklap on 5/4/2017.
  */
 public class ResponsePrettyFragment extends AbstractSaveFileFragment {
 
-    ArrayList<CharSequence> texts;
+    List<CharSequence> texts;
     ListView listView;
 
     @Nullable
@@ -42,19 +41,16 @@ public class ResponsePrettyFragment extends AbstractSaveFileFragment {
         View view = inflater.inflate(R.layout.fragment_response_listview, container, false);
         listView = (ListView) view.findViewById(R.id.listView);
         if (((ResponseActivity) getActivity()).responseBody != null) {
+            String text = TextUtils.join("\n", ((ResponseActivity) getActivity()).responseBody);
             try {
-                MyJSONObject jsonObject = new MyJSONObject(((ResponseActivity) getActivity())
-                        .responseBody);
+                MyJSONObject jsonObject = new MyJSONObject(text);
                 texts = jsonObject.getCharSequences(2);
             } catch (JSONException e) {
                 try {
-                    MyJSONArray jsonArray = new MyJSONArray(((ResponseActivity) getActivity())
-                            .responseBody);
+                    MyJSONArray jsonArray = new MyJSONArray(text);
                     texts = jsonArray.getCharSequences(2);
                 } catch (JSONException e1) {
-                    texts = new ArrayList<>();
-                    texts.addAll(StringUtils.splitLines(((ResponseActivity) getActivity())
-                            .responseBody, 1024));
+                    texts = ((ResponseActivity) getActivity()).responseBody;
                 }
             }
             listView.setAdapter(new ArrayAdapter<>(getContext(), R.layout.list_response_textview,

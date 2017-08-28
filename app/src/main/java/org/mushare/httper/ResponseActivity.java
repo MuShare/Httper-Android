@@ -34,6 +34,7 @@ import org.mushare.httper.utils.RestClient;
 import org.mushare.httper.view.MyTouchableLinearLayout;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,6 +42,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -62,7 +65,7 @@ public class ResponseActivity extends AppCompatActivity {
     static final int MSG_DONE = 0;
     static final int MSG_Fail = 1;
     final int DIALOG_ERROR_CONNECT = 0;
-    String responseBody;
+    List<CharSequence> responseBody;
     ArrayList<MyPair> params;
     ArrayList<MyPair> headers;
     String method;
@@ -208,16 +211,25 @@ public class ResponseActivity extends AppCompatActivity {
         return result;
     }
 
-    private String loadCache(String charset) throws IOException {
-        InputStreamReader buf = new InputStreamReader(new FileInputStream(cacheFile), charset);
-        char[] buffer = new char[1024];
-        int charsRead;
+    private List<CharSequence> loadCache(String charset) throws IOException {
+        List<CharSequence> list = new LinkedList<>();
+        BufferedReader buf = new BufferedReader(new InputStreamReader(new FileInputStream
+                (cacheFile), charset));
         StringBuilder sb = new StringBuilder();
-        while ((charsRead = buf.read(buffer)) != -1) {
-            sb.append(buffer, 0, charsRead);
+        String line;
+        while ((line = buf.readLine()) != null) {
+            sb.append(line).append("\n");
+            if (sb.length() > 1024) {
+                sb.setLength(sb.length() - 1);
+                list.add(sb.toString());
+                sb.setLength(0);
+            }
         }
-        buf.close();
-        return sb.toString();
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 1);
+            list.add(sb.toString());
+        }
+        return list;
     }
 
     private void refresh() {

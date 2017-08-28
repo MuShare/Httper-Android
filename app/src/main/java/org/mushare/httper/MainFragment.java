@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
@@ -198,6 +199,10 @@ public class MainFragment extends Fragment {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!checkHeader(getHeaders())) {
+                    return;
+                }
+
                 RequestRecord requestRecord = new RequestRecord();
                 requestRecord.setCreateAt(System.currentTimeMillis());
                 requestRecord.setMethod(spinnerMethod.getSelectedItem().toString());
@@ -249,6 +254,47 @@ public class MainFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    private String charToString(char c) {
+        switch (c) {
+            case '\r':
+                return "\\r";
+            case '\t':
+                return "\\t";
+            case '\b':
+                return "\\b";
+            case '\n':
+                return "\\n";
+            case '\f':
+                return "\\f";
+            default:
+                return String.valueOf(c);
+        }
+    }
+
+    private boolean checkHeader(List<MyPair> list) {
+        for (MyPair pair : list) {
+            String name = pair.getFirst();
+            for (int i = 0, length = name.length(); i < length; i++) {
+                char c = name.charAt(i);
+                if (c <= '\u0020' || c >= '\u007f') {
+                    Toast.makeText(getContext(), getString(R.string.invalid_header_error,
+                            charToString(c), (int) c, i, name), Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            }
+            String value = pair.getSecond();
+            for (int i = 0, length = value.length(); i < length; i++) {
+                char c = value.charAt(i);
+                if ((c <= '\u001f' && c != '\t') || c >= '\u007f') {
+                    Toast.makeText(getContext(), getString(R.string.invalid_header_error,
+                            charToString(c), (int) c, i, value), Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public void clearAll() {

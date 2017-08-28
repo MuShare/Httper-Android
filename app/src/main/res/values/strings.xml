@@ -22,6 +22,7 @@
     <string name="main_view_history">History</string>
     <string name="main_view_clear">Clear all</string>
     <string name="main_view_about">About this app</string>
+    <string name="invalid_header_error">Send failed. Invalid character \'%1$s\' (%2$#04x) at %3$d in HTTP header field:\n\n%4$s</string>
 
     <string name="result_view_pretty">Pretty</string>
     <string name="result_view_raw">Raw</string>
