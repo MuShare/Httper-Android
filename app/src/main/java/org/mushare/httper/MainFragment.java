@@ -199,7 +199,8 @@ public class MainFragment extends Fragment {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!checkHeader(getHeaders())) {
+                ArrayList<MyPair> header = getHeaders();
+                if (!checkHeader(header)) {
                     return;
                 }
 
@@ -208,7 +209,7 @@ public class MainFragment extends Fragment {
                 requestRecord.setMethod(spinnerMethod.getSelectedItem().toString());
                 requestRecord.setHttp(spinnerHttp.getSelectedItem().toString());
                 requestRecord.setUrl(editTextUrl.getText().toString());
-                requestRecord.setHeaders(pairListToJSONArray(getHeaders()).toString());
+                requestRecord.setHeaders(pairListToJSONArray(header).toString());
                 requestRecord.setParameters(pairListToJSONArray(getParameters()).toString());
                 requestRecord.setBody(body);
                 requestRecordDao.queryBuilder().where(RequestRecordDao.Properties.Method.eq
@@ -225,7 +226,7 @@ public class MainFragment extends Fragment {
                 intent.putExtra("method", spinnerMethod.getSelectedItem().toString());
                 intent.putExtra("http", spinnerHttp.getSelectedItem().toString());
                 intent.putExtra("url", editTextUrl.getText().toString());
-                intent.putExtra("header", getHeaders());
+                intent.putExtra("header", header);
                 intent.putExtra("parameter", getParameters());
                 intent.putExtra("body", body);
                 startActivity(intent);
@@ -256,23 +257,6 @@ public class MainFragment extends Fragment {
         return view;
     }
 
-    private String charToString(char c) {
-        switch (c) {
-            case '\r':
-                return "\\r";
-            case '\t':
-                return "\\t";
-            case '\b':
-                return "\\b";
-            case '\n':
-                return "\\n";
-            case '\f':
-                return "\\f";
-            default:
-                return String.valueOf(c);
-        }
-    }
-
     private boolean checkHeader(List<MyPair> list) {
         for (MyPair pair : list) {
             String name = pair.getFirst();
@@ -280,7 +264,7 @@ public class MainFragment extends Fragment {
                 char c = name.charAt(i);
                 if (c <= '\u0020' || c >= '\u007f') {
                     Toast.makeText(getContext(), getString(R.string.invalid_header_error,
-                            charToString(c), (int) c, i, name), Toast.LENGTH_LONG).show();
+                            c, (int) c, i, name), Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -289,7 +273,7 @@ public class MainFragment extends Fragment {
                 char c = value.charAt(i);
                 if ((c <= '\u001f' && c != '\t') || c >= '\u007f') {
                     Toast.makeText(getContext(), getString(R.string.invalid_header_error,
-                            charToString(c), (int) c, i, value), Toast.LENGTH_LONG).show();
+                            c, (int) c, i, value), Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -301,7 +285,8 @@ public class MainFragment extends Fragment {
         spinnerMethod.setSelection(0);
         spinnerHttp.setSelection(0);
         editTextUrl.setText(null);
-        adapter.set(Arrays.<AbstractRequestSettingListItem>asList(new RequestSettingListStickTitle
+        adapter.setNewList(Arrays.<AbstractRequestSettingListItem>asList(new
+                RequestSettingListStickTitle
                 (RequestSettingType.header), new RequestSettingListKVItem
                 (RequestSettingType.header), new RequestSettingListStickTitle
                 (RequestSettingType.parameter), new RequestSettingListKVItem
@@ -366,7 +351,7 @@ public class MainFragment extends Fragment {
     private void restoreAdapter(Bundle savedInstanceState) {
         stickyHeader.setType((RequestSettingType) savedInstanceState.getSerializable
                 ("stickyHeader"));
-        adapter.set((ArrayList<AbstractRequestSettingListItem>) savedInstanceState
+        adapter.setNewList((ArrayList<AbstractRequestSettingListItem>) savedInstanceState
                 .getSerializable("dataSet"));
         adapter.withSavedInstanceState(savedInstanceState);
     }
@@ -414,7 +399,7 @@ public class MainFragment extends Fragment {
             spinnerMethod.setSelection(spinnerMethodSelection);
             spinnerHttp.setSelection(spinnerHttpSelection);
             editTextUrl.setText(requestRecord.getUrl());
-            adapter.set(dataSet);
+            adapter.setNewList(dataSet);
             body = requestRecord.getBody();
         } else super.onActivityResult(requestCode, resultCode, data);
     }

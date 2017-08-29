@@ -163,7 +163,11 @@ public class RequestSettingListKVItem extends
 
                     @Override
                     public void afterTextChanged(Editable s) {
-
+                        if (s.toString().indexOf('\n') != -1 || s.toString().indexOf('\r') != -1) {
+                            String newString = s.toString().replaceAll("[\r\n]+", "");
+                            s.clear();
+                            s.append(newString);
+                        }
                     }
                 });
             } else if (view.getId() == R.id.textViewValue) {
@@ -183,7 +187,11 @@ public class RequestSettingListKVItem extends
 
                     @Override
                     public void afterTextChanged(Editable s) {
-
+                        if (s.toString().indexOf('\n') != -1 || s.toString().indexOf('\r') != -1) {
+                            String newString = s.toString().replaceAll("[\r\n]+", " ");
+                            s.clear();
+                            s.append(newString);
+                        }
                     }
                 });
             }
