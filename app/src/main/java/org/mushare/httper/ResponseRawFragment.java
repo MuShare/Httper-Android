@@ -81,7 +81,10 @@ public class ResponseRawFragment extends AbstractSaveFileFragment {
 
     @Override
     public String defaultFileName() {
-        String fileName = Uri.parse(((ResponseActivity) getActivity()).url).getLastPathSegment();
-        return fileName == null ? "" : fileName;
+        Uri uri = Uri.parse(((ResponseActivity) getActivity()).url);
+        String fileName = uri.getLastPathSegment();
+        if (fileName == null || fileName.isEmpty()) fileName = uri.getHost();
+        return (fileName == null || fileName.isEmpty() ? String.valueOf(System.currentTimeMillis
+                ()) : fileName);
     }
 }

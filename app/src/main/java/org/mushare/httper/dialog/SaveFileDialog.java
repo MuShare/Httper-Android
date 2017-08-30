@@ -23,6 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by dklap on 6/5/2017.
@@ -38,7 +40,6 @@ public class SaveFileDialog extends DialogFragment {
         textView.setText(getResources().getString(R.string.save_file_name, Environment
                 .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()));
         final EditText editText = (EditText) view.findViewById(R.id.editText);
-        editText.setText(fragment.defaultFileName());
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -52,13 +53,18 @@ public class SaveFileDialog extends DialogFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.toString().matches(".*[\\\\/:*?\"<>|].*")) {
-                    String newString = s.toString().replaceAll("[\\\\/:*?\"<>|]", "");
+                Pattern p = Pattern.compile("[\\\\/:*?\"<>|\\x00-\\x1f\\x7f]");   // the pattern
+                // to search for
+                Matcher m = p.matcher(s);
+                if (m.find()) {
+                    String newString = s.toString().replaceAll
+                            ("[\\\\/:*?\"<>|\\x00-\\x1f\\x7f]+", "");
                     s.clear();
                     s.append(newString);
                 }
             }
         });
+        editText.setText(fragment.defaultFileName());
         return new AlertDialog.Builder(getContext()).setTitle(R.string.dialog_save_file_title)
                 .setView(view).setPositiveButton(R.string
                         .dialog_ok, new DialogInterface.OnClickListener() {
@@ -66,13 +72,16 @@ public class SaveFileDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         OutputStream outputStream = null;
                         try {
+                            String fileName = editText.getText().toString();
+                            fileName = fileName.isEmpty() ? fragment.defaultFileName() : fileName;
                             File file = new File(Environment.getExternalStoragePublicDirectory
-                                    (Environment.DIRECTORY_DOWNLOADS).getPath(), editText.getText()
-                                    .toString());
+                                    (Environment.DIRECTORY_DOWNLOADS).getPath(), fileName);
                             Environment.getExternalStoragePublicDirectory(Environment
                                     .DIRECTORY_DOWNLOADS).mkdirs();
                             outputStream = new FileOutputStream(file);
                             fragment.saveFile(outputStream);
+                            Toast.makeText(getContext(), getString(R.string.save_file_success,
+                                    file.getPath()), Toast.LENGTH_SHORT).show();
                         } catch (FileNotFoundException e) {
                             Toast.makeText(getContext(), R.string.save_file_error, Toast
                                     .LENGTH_SHORT).show();

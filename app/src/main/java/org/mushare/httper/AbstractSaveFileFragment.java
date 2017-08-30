@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 import org.mushare.httper.dialog.SaveFileDialog;
 
@@ -42,6 +43,7 @@ public abstract class AbstractSaveFileFragment extends Fragment {
     void openSaveDialog() {
         DialogFragment newFragment = new SaveFileDialog();
         newFragment.setTargetFragment(AbstractSaveFileFragment.this, 0);
+        newFragment.setCancelable(false);
         newFragment.show(getFragmentManager(), "dialog");
         if (SDK_INT >= 23) {
             if (getContext().checkSelfPermission(Manifest.permission
@@ -60,6 +62,8 @@ public abstract class AbstractSaveFileFragment extends Fragment {
                 outputStream = getContext().getContentResolver()
                         .openOutputStream(data.getData());
                 saveFile(outputStream);
+                Toast.makeText(getContext(), R.string.save_file_success2, Toast.LENGTH_SHORT)
+                        .show();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
