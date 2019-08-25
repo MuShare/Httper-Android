@@ -28,17 +28,22 @@
 -keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
 public static java.lang.String TABLENAME;
 }
--keep class **$Properties
+-keep class **$Properties {*;}
 
 # If you do not use SQLCipher:
--dontwarn org.greenrobot.greendao.database.**
-# If you do not use Rx:
+-dontwarn net.sqlcipher.database.**
+# If you do not use RxJava:
 -dontwarn rx.**
 
 # OkHttp
--dontwarn okio.**
--dontwarn javax.annotation.Nullable
--dontwarn javax.annotation.ParametersAreNonnullByDefault
+# JSR 305 annotations are for embedding nullability information.
+-dontwarn javax.annotation.**
 
-# SearchView
--keep class android.support.v7.widget.SearchView { *; }
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
+# Animal Sniffer compileOnly dependency to ensure APIs are compatible with older versions of Java.
+-dontwarn org.codehaus.mojo.animal_sniffer.*
+
+# OkHttp platform used only on JVM and when Conscrypt dependency is available.
+-dontwarn okhttp3.internal.platform.ConscryptPlatform

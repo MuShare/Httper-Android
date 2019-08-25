@@ -5,7 +5,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -39,7 +39,7 @@ public class ResponsePrettyFragment extends AbstractSaveFileFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
     final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_response_listview, container, false);
-        listView = (ListView) view.findViewById(R.id.listView);
+        listView = view.findViewById(R.id.listView);
         if (((ResponseActivity) getActivity()).responseBody != null) {
             String text = TextUtils.join("\n", ((ResponseActivity) getActivity()).responseBody);
             try {

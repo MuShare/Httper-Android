@@ -1,9 +1,9 @@
 package org.mushare.httper;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -95,15 +95,15 @@ public class RequestSettingListKVItem extends
 
         MyViewHolder(final View view, boolean isHttpHeader) {
             super(view);
-            textViewKey = (AutoCompleteTextView) view.findViewById(R.id.textViewKey);
+            textViewKey = view.findViewById(R.id.textViewKey);
             if (isHttpHeader) {
                 ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(view.getContext(),
                         android.R.layout.simple_dropdown_item_1line, view.getContext()
                         .getResources().getStringArray(R.array.headers_array));
                 textViewKey.setAdapter(autoCompleteAdapter);
             }
-            textViewValue = (EditText) view.findViewById(R.id.textViewValue);
-            imageButtonRemove = (ImageButton) view.findViewById(R.id.imageButtonRemove);
+            textViewValue = view.findViewById(R.id.textViewValue);
+            imageButtonRemove = view.findViewById(R.id.imageButtonRemove);
         }
     }
 

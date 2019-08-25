@@ -1,6 +1,6 @@
 package org.mushare.httper;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.mikepenz.fastadapter.IClickable;
 import com.mikepenz.fastadapter.IItem;

@@ -3,9 +3,9 @@ package org.mushare.httper.dialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -23,7 +23,7 @@ public class RequestRawBodyDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final MainFragment fragment = (MainFragment) getTargetFragment();
         View view = ScrollView.inflate(getContext(), R.layout.dialog_raw_request_body, null);
-        final EditText editText = (EditText) view.findViewById(R.id.editText);
+        final EditText editText = view.findViewById(R.id.editText);
         editText.setText(fragment.getBody());
         return new AlertDialog.Builder(getContext()).setView(view).setPositiveButton(R.string
                 .dialog_ok, new DialogInterface.OnClickListener() {

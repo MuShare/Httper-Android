@@ -7,18 +7,18 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.core.view.ViewCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -100,16 +100,16 @@ public class ResponseActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
             findViewById(R.id.main).setPadding(0, getStatusBarHeight(), 0, 0);
         }
-        toolbar = (MyTouchableLinearLayout) findViewById(R.id.appBar);
+        toolbar = findViewById(R.id.appBar);
 
-        textViewURL = (TextView) findViewById(R.id.textViewURL);
-        textViewStatusCode = (TextView) findViewById(R.id.textViewStatusCode);
-        textViewHeader = (TextView) findViewById(R.id.textViewHeaders);
+        textViewURL = findViewById(R.id.textViewURL);
+        textViewStatusCode = findViewById(R.id.textViewStatusCode);
+        textViewHeader = findViewById(R.id.textViewHeaders);
 
-        viewPager = (ViewPager) findViewById(R.id.content);
+        viewPager = findViewById(R.id.content);
         viewPager.setOffscreenPageLimit(2);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -165,7 +165,7 @@ public class ResponseActivity extends AppCompatActivity {
         if (savedInstanceState != null)
             bottomSheetBehavior.setState(savedInstanceState.getInt("bottomSheetState"));
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_result_activity);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override

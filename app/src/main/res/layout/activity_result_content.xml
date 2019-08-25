@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.design.widget.TabLayout
+            <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabs"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -30,29 +30,29 @@
                 app:tabBackground="?selectableItemBackgroundBorderless"
                 app:tabMode="scrollable">
 
-                <android.support.design.widget.TabItem
+                <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/result_view_pretty"/>
 
-                <android.support.design.widget.TabItem
+                <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/result_view_raw"/>
 
-                <android.support.design.widget.TabItem
+                <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/result_view_preview"/>
-            </android.support.design.widget.TabLayout>
+            </com.google.android.material.tabs.TabLayout>
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
         </org.mushare.httper.view.MyTouchableLinearLayout>
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -81,7 +81,7 @@
 
         </LinearLayout>
 
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

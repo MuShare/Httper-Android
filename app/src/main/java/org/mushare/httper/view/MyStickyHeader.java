@@ -1,7 +1,7 @@
 package org.mushare.httper.view;
 
 import android.content.Context;
-import android.support.constraint.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ImageButton;
@@ -37,8 +37,8 @@ public class MyStickyHeader extends ConstraintLayout {
 
     void init() {
         inflate(getContext(), R.layout.http_setting_title, this);
-        title = (TextView) findViewById(R.id.textViewTitle);
-        button = (ImageButton) findViewById(R.id.imageButtonAdd);
+        title = findViewById(R.id.textViewTitle);
+        button = findViewById(R.id.imageButtonAdd);
     }
 
     public void setButtonOnClickListener(OnClickListener onClickListener) {

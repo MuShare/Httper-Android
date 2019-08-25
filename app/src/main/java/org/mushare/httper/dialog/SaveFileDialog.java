@@ -4,9 +4,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -36,10 +36,10 @@ public class SaveFileDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final AbstractSaveFileFragment fragment = (AbstractSaveFileFragment) getTargetFragment();
         View view = LinearLayout.inflate(getContext(), R.layout.dialog_save_file, null);
-        TextView textView = (TextView) view.findViewById(R.id.textView);
+        TextView textView = view.findViewById(R.id.textView);
         textView.setText(getResources().getString(R.string.save_file_name, Environment
                 .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()));
-        final EditText editText = (EditText) view.findViewById(R.id.editText);
+        final EditText editText = view.findViewById(R.id.editText);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

@@ -1,6 +1,6 @@
 package org.mushare.httper;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
@@ -61,8 +61,8 @@ public class HistoryListItem extends AbstractItem<HistoryListItem, HistoryListIt
 
         MyViewHolder(View view) {
             super(view);
-            textViewMethod = (TextView) view.findViewById(R.id.method);
-            textViewUrl = (TextView) view.findViewById(R.id.url);
+            textViewMethod = view.findViewById(R.id.method);
+            textViewUrl = view.findViewById(R.id.url);
         }
     }
 }

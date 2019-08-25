@@ -1,7 +1,7 @@
 package org.mushare.httper;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -66,8 +66,8 @@ public class RequestSettingListStickTitle extends
 
         MyViewHolder(View view) {
             super(view);
-            textViewTitle = (TextView) view.findViewById(R.id.textViewTitle);
-            imageButtonAdd = (ImageButton) view.findViewById(R.id.imageButtonAdd);
+            textViewTitle = view.findViewById(R.id.textViewTitle);
+            imageButtonAdd = view.findViewById(R.id.imageButtonAdd);
         }
     }
 

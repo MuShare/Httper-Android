@@ -4,13 +4,13 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,7 +64,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
         //as we provide id's for the items we want the hasStableIds enabled to speed up things
         itemAdapter.setHasStableIds(true);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
@@ -120,7 +120,7 @@ public class RequestHistoryActivity extends AppCompatActivity {
 
         emptyView = findViewById(R.id.emptyMessage);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_history_activity);
         menuItemSearch = toolbar.getMenu().findItem(R.id.menuSearchHistory);
         menuItemClear = toolbar.getMenu().findItem(R.id.menuClearHistory);

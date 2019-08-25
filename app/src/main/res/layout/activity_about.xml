@@ -5,7 +5,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -193,5 +193,5 @@
             android:text="v1.0"
             app:layout_constraintBottom_toBottomOf="@+id/textView2"
             app:layout_constraintLeft_toRightOf="@+id/textView2"/>
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

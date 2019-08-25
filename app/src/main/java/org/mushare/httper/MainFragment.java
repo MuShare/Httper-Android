@@ -3,12 +3,12 @@ package org.mushare.httper;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -77,12 +77,12 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
-        spinnerMethod = (Spinner) view.findViewById(R.id.spinnerMethods);
-        spinnerHttp = (Spinner) view.findViewById(R.id.spinnerHttp);
-        editTextUrl = (EditText) view.findViewById(R.id.editTextUrl);
+        spinnerMethod = view.findViewById(R.id.spinnerMethods);
+        spinnerHttp = view.findViewById(R.id.spinnerHttp);
+        editTextUrl = view.findViewById(R.id.editTextUrl);
         AutofitHelper.create(editTextUrl).setMinTextSize(TypedValue.COMPLEX_UNIT_SP, 14)
                 .setPrecision(0.1f);
-        final Button buttonSend = (Button) view.findViewById(R.id.buttonSend);
+        final Button buttonSend = view.findViewById(R.id.buttonSend);
 
         editTextUrl.addTextChangedListener(new TextWatcher() {
             @Override
@@ -109,7 +109,7 @@ public class MainFragment extends Fragment {
             }
         });
 
-        stickyHeader = (MyStickyHeader) view.findViewById(R.id.stickyHeader);
+        stickyHeader = view.findViewById(R.id.stickyHeader);
 
         //create our adapters
         adapter = new FastItemAdapter<>();
@@ -135,7 +135,7 @@ public class MainFragment extends Fragment {
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
@@ -233,7 +233,7 @@ public class MainFragment extends Fragment {
             }
         });
 
-        final Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        final Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_main_fragment);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override

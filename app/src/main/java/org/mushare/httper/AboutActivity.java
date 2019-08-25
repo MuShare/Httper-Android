@@ -3,7 +3,7 @@ package org.mushare.httper;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -20,7 +20,7 @@ public class AboutActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        scrollView = (ScrollView) findViewById(R.id.scrollViewAbout);
+        scrollView = findViewById(R.id.scrollViewAbout);
         ((TextView) findViewById(R.id.textViewVersion)).setText(getString(R.string
                 .about_view_version, BuildConfig.VERSION_NAME));
         findViewById(R.id.imageButtonLink).setOnClickListener(new View.OnClickListener() {
@@ -53,7 +53,7 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
 
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linearLayoutAbout);
+        LinearLayout linearLayout = findViewById(R.id.linearLayoutAbout);
         final String[] licenses = getResources().getStringArray(R.array.licenses);
         if (licenses.length % 3 == 0) {
             int i = 0;
