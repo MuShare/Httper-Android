@@ -272,6 +272,11 @@ public class MyJSONStringer {
              * (U+0000 through U+001F)."
              */
             switch (c) {
+                case '"':
+                case '\\':
+                    tmp.append('\\').append(c);
+                    break;
+
                 case '\t':
                     if (tmp.length() > 0) {
                         stringBuilder.append(getColoredString(tmp.toString(), color));
