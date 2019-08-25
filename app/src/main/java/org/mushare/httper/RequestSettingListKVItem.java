@@ -201,7 +201,7 @@ public class RequestSettingListKVItem extends
         @Override
         public List<View> onBindMany(@NonNull RecyclerView.ViewHolder viewHolder) {
             if (viewHolder instanceof RequestSettingListKVItem.MyViewHolder) {
-                return Arrays.<View>asList(((MyViewHolder) viewHolder).textViewKey, (
+                return Arrays.asList(((MyViewHolder) viewHolder).textViewKey, (
                         (MyViewHolder) viewHolder).textViewValue);
             }
             return null;

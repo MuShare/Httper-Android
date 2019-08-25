@@ -285,7 +285,7 @@ public class MainFragment extends Fragment {
         spinnerMethod.setSelection(0);
         spinnerHttp.setSelection(0);
         editTextUrl.setText(null);
-        adapter.setNewList(Arrays.<AbstractRequestSettingListItem>asList(new
+        adapter.setNewList(Arrays.asList(new
                 RequestSettingListStickTitle
                 (RequestSettingType.header), new RequestSettingListKVItem
                 (RequestSettingType.header), new RequestSettingListStickTitle

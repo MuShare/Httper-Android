@@ -41,23 +41,25 @@ public class ResponsePreviewFragment extends Fragment {
         webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
-        webSettings.setDefaultTextEncodingName(((ResponseActivity) getActivity()).charset);
-        if (((ResponseActivity) getActivity()).responseBody != null) {
-//                webview.loadDataWithBaseURL(((ResponseActivity) getActivity()).url, (
-//                        (ResponseActivity) getActivity()).responseBody, null, null, null);
-            try {
-                mWebView.loadUrl(((ResponseActivity) getActivity()).cacheFile.toURI().toURL()
-                        .toString());
-                mWebView.setWebViewClient(new WebViewClient() {
-                    public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest
-                            webResourceRequest) {
-                        return true;
-                    }
-                });
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+        webSettings.setDefaultFixedFontSize(24);
+        ResponseActivity acticity = (ResponseActivity) getActivity();
+        if (acticity != null && acticity.responseBody != null) {
+            if (acticity.mimeType != null && acticity.mimeType.split("/")[0].matches("[tT][eE][xX][tT]")) {
+                mWebView.loadDataWithBaseURL(acticity.url, acticity.responseBody, acticity.mimeType, acticity.charset, null);
+            } else {
+                try {
+                    mWebView.loadUrl(acticity.cacheFile.toURI().toURL().toString());
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
             }
         }
+        mWebView.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest
+                    webResourceRequest) {
+                return true;
+            }
+        });
         return mWebView;
     }
 

@@ -65,13 +65,14 @@ public class ResponseActivity extends AppCompatActivity {
     static final int MSG_DONE = 0;
     static final int MSG_Fail = 1;
     final int DIALOG_ERROR_CONNECT = 0;
-    List<CharSequence> responseBody;
+    String responseBody;
     ArrayList<MyPair> params;
     ArrayList<MyPair> headers;
     String method;
     String url;
     String body;
     String charset;
+    String mimeType;
 
     Call call;
     MyHandler myHandler = new MyHandler(this);
@@ -153,6 +154,7 @@ public class ResponseActivity extends AppCompatActivity {
             url = savedInstanceState.getString("url");
             statusCode = savedInstanceState.getInt("statusCode");
             responseHeaders = savedInstanceState.getCharSequence("responseHeaders");
+            mimeType = savedInstanceState.getString("mimeType");
             textViewURL.setText(url);
             textViewStatusCode.setText(String.valueOf(statusCode));
             textViewHeader.setText(responseHeaders);
@@ -211,25 +213,16 @@ public class ResponseActivity extends AppCompatActivity {
         return result;
     }
 
-    private List<CharSequence> loadCache(String charset) throws IOException {
-        List<CharSequence> list = new LinkedList<>();
+    private String loadCache(String charset) throws IOException {
         BufferedReader buf = new BufferedReader(new InputStreamReader(new FileInputStream
                 (cacheFile), charset));
         StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = buf.readLine()) != null) {
-            sb.append(line).append("\n");
-            if (sb.length() > 1024) {
-                sb.setLength(sb.length() - 1);
-                list.add(sb.toString());
-                sb.setLength(0);
-            }
+        char[] chars = new char[1024];
+        int length;
+        while ((length = buf.read(chars)) > 0) {
+            sb.append(chars, 0, length);
         }
-        if (sb.length() > 0) {
-            sb.setLength(sb.length() - 1);
-            list.add(sb.toString());
-        }
-        return list;
+        return sb.toString();
     }
 
     private void refresh() {
@@ -299,6 +292,7 @@ public class ResponseActivity extends AppCompatActivity {
         outState.putCharSequence("responseHeaders", responseHeaders);
         outState.putString("url", url);
         outState.putString("charset", charset);
+        outState.putString("mimeType", mimeType);
     }
 
     @Nullable
@@ -418,7 +412,7 @@ public class ResponseActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+        public void onResponse(@NonNull Call call, @NonNull Response response) {
             ResponseBody body = response.body();
             if (body != null) {
                 try {
@@ -426,6 +420,7 @@ public class ResponseActivity extends AppCompatActivity {
 //                    Log.i("mediaType", mediaType != null ? mediaType.toString() : "");
                     charset = Util.bomAwareCharset(body.source(), mediaType != null ? mediaType
                             .charset(UTF_8) : UTF_8).displayName();
+                    mimeType = mediaType != null ? mediaType.toString() : "text/plain";
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream
                             (cacheFile));
                     byte[] buffer = new byte[8 * 1024];
