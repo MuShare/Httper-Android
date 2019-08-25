@@ -1,6 +1,7 @@
 package org.mushare.httper.utils;
 
 import java.util.List;
+import java.security.Security;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -8,6 +9,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.internal.Util;
+import org.conscrypt.Conscrypt;
 
 import static org.mushare.httper.utils.HttpUtils.phaseHeaders;
 
@@ -16,6 +18,9 @@ import static org.mushare.httper.utils.HttpUtils.phaseHeaders;
  */
 
 public class RestClient {
+    static{
+        Security.insertProviderAt(Conscrypt.newProvider(), 1);
+    }
     private static OkHttpClient client = new OkHttpClient();
 
     public static Call get(String url, List<MyPair> headers, Callback callback) {
