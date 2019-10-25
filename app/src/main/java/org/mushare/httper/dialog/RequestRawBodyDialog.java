@@ -25,6 +25,9 @@ public class RequestRawBodyDialog extends DialogFragment {
         View view = ScrollView.inflate(getContext(), R.layout.dialog_raw_request_body, null);
         final EditText editText = view.findViewById(R.id.editText);
         editText.setText(fragment.getBody());
+        // Set focus on the EditText.
+        editText.setFocusableInTouchMode(true);
+        editText.requestFocus();
         return new AlertDialog.Builder(getContext()).setView(view).setPositiveButton(R.string
                 .dialog_ok, new DialogInterface.OnClickListener() {
             @Override
